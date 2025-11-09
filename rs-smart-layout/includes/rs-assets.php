@@ -22,6 +22,7 @@ function rs_enqueue_assets() {
 	// 檢查是否為需要套用的頁面類型
 	$should_enqueue = is_category()
 		|| is_tax()
+		|| ( function_exists( 'is_shop' ) && is_shop() )
 		|| ( function_exists( 'is_product_category' ) && is_product_category() )
 		|| ( function_exists( 'is_product_tag' ) && is_product_tag() );
 

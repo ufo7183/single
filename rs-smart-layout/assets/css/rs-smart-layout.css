@@ -29,12 +29,30 @@
 }
 
 /* ==========================================================================
+   全寬版型（移除側邊欄影響）
+   ========================================================================== */
+
+.rs-full-width {
+	width: 100% !important;
+	max-width: 100% !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	float: none !important;
+}
+
+.rs-smart-layout-main {
+	width: 100%;
+	max-width: 100%;
+	padding: 40px 20px;
+}
+
+/* ==========================================================================
    Grid 佈局容器
    ========================================================================== */
 
 .rs-layout-container {
 	width: 100%;
-	max-width: 1400px;
+	max-width: 1280px;
 	margin: 0 auto;
 	padding: 0 20px;
 }
@@ -227,8 +245,8 @@
 	}
 }
 
-/* 大桌面 (> 1400px) */
-@media (min-width: 1400px) {
+/* 大桌面 (> 1280px) */
+@media (min-width: 1280px) {
 	.rs-layout-container {
 		padding: 0;
 	}

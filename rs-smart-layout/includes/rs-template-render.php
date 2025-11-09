@@ -179,6 +179,27 @@ function rs_render_pagination( $query ) {
  * 執行智慧判定並渲染內容
  */
 function rs_smart_render() {
+	// 檢查是否為 Shop 頁面
+	if ( function_exists( 'is_shop' ) && is_shop() ) {
+		// Shop 頁面：顯示所有第一層商品分類
+		$top_level_categories = get_terms(
+			array(
+				'taxonomy'   => 'product_cat',
+				'parent'     => 0,
+				'hide_empty' => false,
+				'orderby'    => 'name',
+				'order'      => 'ASC',
+			)
+		);
+
+		if ( ! is_wp_error( $top_level_categories ) && ! empty( $top_level_categories ) ) {
+			rs_render_child_terms( $top_level_categories, 'product_cat' );
+		} else {
+			echo '<p class="rs-no-results">' . esc_html__( '目前沒有商品分類。', 'rs-smart-layout' ) . '</p>';
+		}
+		return;
+	}
+
 	$queried_object = get_queried_object();
 
 	// 確保是分類頁面
