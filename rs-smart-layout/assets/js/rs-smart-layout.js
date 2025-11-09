@@ -2,7 +2,7 @@
  * RS Smart Layout - 前端腳本
  *
  * @package RS_Smart_Layout
- * @version 1.0.0
+ * @version 1.0.1
  */
 
 (function($) {
@@ -69,7 +69,7 @@
 	 * 允許外部擴展
 	 */
 	window.RSSmartLayout = {
-		version: '1.0.0',
+		version: '1.0.1',
 
 		// 重新初始化（用於 AJAX 載入後）
 		reinit: function() {

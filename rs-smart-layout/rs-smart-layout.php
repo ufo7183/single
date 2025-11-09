@@ -3,7 +3,7 @@
  * Plugin Name: RS Smart Layout
  * Plugin URI: https://example.com/rs-smart-layout
  * Description: 智慧分類與文章版型外掛 - 自動套用統一的圖片+標題卡片樣式
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: rs
  * Author URI: https://example.com
  * Text Domain: rs-smart-layout
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // 定義插件常數
-define( 'RS_SMART_LAYOUT_VERSION', '1.0.0' );
+define( 'RS_SMART_LAYOUT_VERSION', '1.0.1' );
 define( 'RS_SMART_LAYOUT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'RS_SMART_LAYOUT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'RS_SMART_LAYOUT_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
