@@ -22,7 +22,7 @@ function rs_get_child_terms( $term_id, $taxonomy ) {
 		'taxonomy'   => $taxonomy,
 		'parent'     => $term_id,
 		'hide_empty' => false,
-		'orderby'    => 'name',
+		'orderby'    => 'menu_order',
 		'order'      => 'ASC',
 	);
 
@@ -187,7 +187,7 @@ function rs_smart_render() {
 				'taxonomy'   => 'product_cat',
 				'parent'     => 0,
 				'hide_empty' => false,
-				'orderby'    => 'name',
+				'orderby'    => 'menu_order',
 				'order'      => 'ASC',
 			)
 		);

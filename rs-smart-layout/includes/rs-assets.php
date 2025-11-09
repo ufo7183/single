@@ -53,6 +53,9 @@ function rs_enqueue_assets() {
 
 	// 添加內聯樣式確保全寬生效
 	$inline_css = "
+		body.archive .rs-full-width,
+		body.tax .rs-full-width,
+		body.post-type-archive .rs-full-width,
 		.rs-full-width,
 		#primary.rs-full-width,
 		.content-area.rs-full-width {
@@ -61,12 +64,14 @@ function rs_enqueue_assets() {
 			margin: 0 !important;
 			padding: 0 !important;
 			float: none !important;
+			box-sizing: border-box !important;
 		}
 		.rs-smart-layout-main {
 			width: 100% !important;
 			max-width: 100% !important;
 			padding: 40px 0 !important;
-			margin: 0 auto !important;
+			margin: 0 !important;
+			box-sizing: border-box !important;
 		}
 		.rs-layout-container {
 			margin-left: auto !important;
@@ -76,6 +81,12 @@ function rs_enqueue_assets() {
 		.sidebar,
 		aside.widget-area {
 			display: none !important;
+		}
+		@media (max-width: 767px) {
+			.rs-layout-container {
+				padding-left: 15px !important;
+				padding-right: 15px !important;
+			}
 		}
 	";
 	wp_add_inline_style( 'rs-smart-layout', $inline_css );

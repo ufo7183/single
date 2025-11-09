@@ -42,6 +42,7 @@ div.rs-full-width {
 	padding: 0 !important;
 	float: none !important;
 	clear: both !important;
+	box-sizing: border-box !important;
 }
 
 .rs-smart-layout-main,
@@ -50,7 +51,8 @@ main.rs-smart-layout-main,
 	width: 100% !important;
 	max-width: 100% !important;
 	padding: 40px 0 !important;
-	margin: 0 auto !important;
+	margin: 0 !important;
+	box-sizing: border-box !important;
 }
 
 /* ==========================================================================
@@ -82,9 +84,23 @@ main.rs-smart-layout-main,
 		gap: 16px !important;
 	}
 
+	.rs-full-width,
+	#primary.rs-full-width,
+	.content-area.rs-full-width {
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+	}
+
+	.rs-smart-layout-main {
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+	}
+
 	.rs-layout-container {
 		padding-left: 15px !important;
 		padding-right: 15px !important;
+		margin-left: auto !important;
+		margin-right: auto !important;
 	}
 }
 
