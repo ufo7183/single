@@ -4,7 +4,7 @@
  * Plugin URI: https://example.com/rs-smart-layout
  * Description: 智慧分類與文章版型外掛 - 自動套用統一的圖片+標題卡片樣式
  * Version: 1.0.0
- * Author: 米米專案團隊
+ * Author: rs
  * Author URI: https://example.com
  * Text Domain: rs-smart-layout
  * Domain Path: /languages
