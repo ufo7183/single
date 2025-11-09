@@ -65,7 +65,12 @@ function rs_enqueue_assets() {
 		.rs-smart-layout-main {
 			width: 100% !important;
 			max-width: 100% !important;
-			padding: 40px 20px !important;
+			padding: 40px 0 !important;
+			margin: 0 auto !important;
+		}
+		.rs-layout-container {
+			margin-left: auto !important;
+			margin-right: auto !important;
 		}
 		#secondary,
 		.sidebar,
