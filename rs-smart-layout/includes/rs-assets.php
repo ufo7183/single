@@ -33,12 +33,12 @@ function rs_enqueue_assets() {
 		return;
 	}
 
-	// 載入 CSS
+	// 載入 CSS（提高優先級到 999）
 	wp_enqueue_style(
 		'rs-smart-layout',
 		RS_SMART_LAYOUT_PLUGIN_URL . 'assets/css/rs-smart-layout.css',
 		array(),
-		RS_SMART_LAYOUT_VERSION,
+		RS_SMART_LAYOUT_VERSION . '.' . time(), // 防止快取
 		'all'
 	);
 
@@ -50,6 +50,30 @@ function rs_enqueue_assets() {
 		RS_SMART_LAYOUT_VERSION,
 		true
 	);
+
+	// 添加內聯樣式確保全寬生效
+	$inline_css = "
+		.rs-full-width,
+		#primary.rs-full-width,
+		.content-area.rs-full-width {
+			width: 100% !important;
+			max-width: 100% !important;
+			margin: 0 !important;
+			padding: 0 !important;
+			float: none !important;
+		}
+		.rs-smart-layout-main {
+			width: 100% !important;
+			max-width: 100% !important;
+			padding: 40px 20px !important;
+		}
+		#secondary,
+		.sidebar,
+		aside.widget-area {
+			display: none !important;
+		}
+	";
+	wp_add_inline_style( 'rs-smart-layout', $inline_css );
 }
 
-add_action( 'wp_enqueue_scripts', 'rs_enqueue_assets' );
+add_action( 'wp_enqueue_scripts', 'rs_enqueue_assets', 999 );
