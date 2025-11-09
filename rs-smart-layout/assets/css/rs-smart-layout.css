@@ -120,12 +120,15 @@ a.rs-card:hover {
 	overflow: hidden !important;
 	background: #f5f5f5 !important;
 	position: relative !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
 }
 
 .rs-card-image img {
 	width: 100% !important;
 	height: 100% !important;
-	object-fit: cover !important;
+	object-fit: contain !important;
 	display: block !important;
 	transition: transform 0.3s ease !important;
 }
