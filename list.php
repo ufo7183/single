@@ -74,8 +74,10 @@ class SI_PostList_System {
 
         // 直接在輸出中包含樣式，確保CSS一定會載入
         $output = $this->get_inline_styles();
+
+        // 桌面版：樹狀列表
         $output .= '<div class="si-post-container" role="tree">';
-        
+
         // 調試信息（開發時使用）
         if ( current_user_can( 'manage_options' ) ) {
             $output .= '<!-- 調試: 找到 ' . count( $all_posts ) . ' 篇文章，' . count( $virtual_categories ) . ' 個虛擬分類，樹狀結構有 ' . count( $item_tree ) . ' 個頂層項目 -->';
@@ -91,7 +93,24 @@ class SI_PostList_System {
         }
 
         $output .= '</div>';
-        
+
+        // 移動端：下拉選單
+        if ( ! empty( $item_tree ) ) {
+            $output .= $this->render_dropdown_list( $item_tree, $active_post_ids );
+        } elseif ( ! empty( $all_items ) ) {
+            // 如果有項目但沒有樹狀結構，創建簡單的下拉選單
+            $simple_tree = array();
+            foreach ( $all_items as $item ) {
+                $simple_tree[ $item['id'] ] = array(
+                    'item' => $item,
+                    'children' => array()
+                );
+            }
+            $output .= $this->render_dropdown_list( $simple_tree, $active_post_ids );
+        } else {
+            $output .= '<div class="si-post-dropdown-container"><p class="si-no-posts">無內容</p></div>';
+        }
+
         // 添加JavaScript
         $output .= $this->get_inline_scripts();
 
@@ -392,6 +411,66 @@ class SI_PostList_System {
     .si-post-container .si-post-item[data-si-level="4"] { margin-left: 30px !important; }
     .si-post-container .si-post-item[data-si-level="5"] { margin-left: 40px !important; }
 }
+
+/* 移動端下拉選單樣式 */
+.si-post-dropdown-container {
+    width: 100% !important;
+    margin: 1em 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.si-post-dropdown {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    font-size: 16px !important;
+    font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    background-color: #fff !important;
+    color: #333 !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+    background-size: 16px !important;
+    padding-right: 40px !important;
+}
+
+.si-post-dropdown:focus {
+    outline: 2px solid #00b5e2 !important;
+    outline-offset: 2px !important;
+    border-color: #00b5e2 !important;
+}
+
+.si-post-dropdown option {
+    padding: 8px !important;
+    font-size: 16px !important;
+}
+
+/* 響應式切換：桌面端顯示樹狀列表，隱藏下拉選單 */
+@media (min-width: 769px) {
+    .si-post-dropdown-container {
+        display: none !important;
+    }
+    .si-post-container {
+        display: block !important;
+    }
+}
+
+/* 響應式切換：移動端顯示下拉選單，隱藏樹狀列表 */
+@media (max-width: 768px) {
+    .si-post-container {
+        display: none !important;
+    }
+    .si-post-dropdown-container {
+        display: block !important;
+    }
+}
 </style>';
     }
     
@@ -460,6 +539,22 @@ document.addEventListener("DOMContentLoaded", function() {
             link.click();
         }
     });
+
+    // 移動端下拉選單導航
+    var dropdown = document.querySelector(".si-post-dropdown");
+    if (dropdown) {
+        dropdown.addEventListener("change", function(e) {
+            var url = e.target.value;
+            if (url && url !== "") {
+                // 檢查 URL 是否有效
+                if (url.indexOf("http") === 0 || url.indexOf("/") === 0) {
+                    window.location.href = url;
+                } else {
+                    console.warn("SI PostList: 無效的 URL - " + url);
+                }
+            }
+        });
+    }
 });
 </script>';
     }
@@ -619,7 +714,97 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         return false;
     }
-    
+
+    /**
+     * 扁平化樹狀項目為下拉選單用的陣列
+     * @param array $nodes 樹狀節點
+     * @param int $level 當前層級
+     * @return array 扁平化的項目陣列
+     */
+    private function flatten_items_for_dropdown( $nodes, $level = 1 ) {
+        $flat_items = array();
+
+        foreach ( $nodes as $node ) {
+            $item = $node['item'];
+            $item_type = $item['type'];
+
+            // 準備項目資料
+            $flat_item = array(
+                'type' => $item_type,
+                'level' => $level,
+                'url' => '',
+                'label' => ''
+            );
+
+            if ( $item_type === 'post' ) {
+                $post = $item['data'];
+                $flat_item['url'] = get_permalink( $post->ID );
+                $flat_item['label'] = $post->post_title;
+            } else {
+                $category = $item['data'];
+                $flat_item['url'] = $category->url ? $category->url : '';
+                $flat_item['label'] = $category->name;
+            }
+
+            $flat_items[] = $flat_item;
+
+            // 遞迴處理子項目
+            if ( ! empty( $node['children'] ) ) {
+                $children_items = $this->flatten_items_for_dropdown( $node['children'], $level + 1 );
+                $flat_items = array_merge( $flat_items, $children_items );
+            }
+        }
+
+        return $flat_items;
+    }
+
+    /**
+     * 渲染移動端下拉選單
+     * @param array $item_tree 樹狀項目結構
+     * @param array $active_ids 啟用的文章 ID
+     * @return string HTML 輸出
+     */
+    private function render_dropdown_list( $item_tree, $active_ids ) {
+        if ( empty( $item_tree ) ) {
+            return '<div class="si-post-dropdown-container"><p>無內容</p></div>';
+        }
+
+        $flat_items = $this->flatten_items_for_dropdown( $item_tree );
+
+        $output = '<div class="si-post-dropdown-container">';
+        $output .= '<select class="si-post-dropdown" aria-label="選擇文章或分類">';
+        $output .= '<option value="">請選擇項目</option>';
+
+        foreach ( $flat_items as $item ) {
+            $prefix = str_repeat( '—', max( 0, $item['level'] - 1 ) ) . ( $item['level'] > 1 ? ' ' : '' );
+
+            if ( $item['type'] === 'category' ) {
+                $label = '📂 ' . $prefix . $item['label'];
+            } else {
+                $label = $prefix . $item['label'];
+            }
+
+            $selected = '';
+            // 如果是當前頁面，標記為選中（僅用於視覺提示）
+            if ( ! empty( $active_ids ) && $item['type'] === 'post' ) {
+                // 從 URL 提取文章 ID 進行比對（簡化處理）
+                global $post;
+                if ( is_singular() && $post && get_permalink( $post->ID ) === $item['url'] ) {
+                    $selected = ' selected';
+                }
+            }
+
+            $output .= '<option value="' . esc_url( $item['url'] ) . '"' . $selected . '>';
+            $output .= esc_html( $label );
+            $output .= '</option>';
+        }
+
+        $output .= '</select>';
+        $output .= '</div>';
+
+        return $output;
+    }
+
     public function add_admin_menus() {
         add_options_page(
             '文章列表設定',
