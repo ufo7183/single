@@ -1,3 +1,4 @@
+<?php
 /**
  * WordPress 文章+分類混合列表 Shortcode 系統
  * Shortcode: [si_postlist post_type="product|post|custom"]
@@ -418,6 +419,7 @@ class SI_PostList_System {
     margin: 1em 0 !important;
     padding: 0 !important;
     box-sizing: border-box !important;
+    position: relative !important;
 }
 
 .si-post-dropdown {
@@ -434,11 +436,22 @@ class SI_PostList_System {
     appearance: none !important;
     -webkit-appearance: none !important;
     -moz-appearance: none !important;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
-    background-repeat: no-repeat !important;
-    background-position: right 12px center !important;
-    background-size: 16px !important;
     padding-right: 40px !important;
+}
+
+/* 下拉箭頭 (使用 CSS border 創建) */
+.si-post-dropdown-container::after {
+    content: "" !important;
+    position: absolute !important;
+    right: 16px !important;
+    top: 50% !important;
+    margin-top: -3px !important;
+    width: 0 !important;
+    height: 0 !important;
+    border-left: 5px solid transparent !important;
+    border-right: 5px solid transparent !important;
+    border-top: 6px solid #666 !important;
+    pointer-events: none !important;
 }
 
 .si-post-dropdown:focus {
