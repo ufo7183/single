@@ -1,0 +1,327 @@
+/**
+ * RS Smart Layout - 前端樣式
+ *
+ * @package RS_Smart_Layout_WT
+ * @version 1.0.1
+ */
+
+/* ==========================================================================
+   面包屑與標題區域
+   ========================================================================== */
+
+.rs-archive-header-wt {
+	margin-bottom: 40px;
+	text-align: center;
+}
+
+.rs-breadcrumb {
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: #333;
+	margin: 0;
+	padding: 0;
+}
+
+/* ==========================================================================
+   全寬版型（移除側邊欄影響）
+   ========================================================================== */
+
+.rs-full-width-wt,
+#primary.rs-full-width-wt,
+.content-area.rs-full-width-wt,
+div.rs-full-width-wt {
+	width: 100% !important;
+	max-width: 100% !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	float: none !important;
+	clear: both !important;
+	box-sizing: border-box !important;
+}
+
+.rs-smart-layout-wt-main,
+main.rs-smart-layout-wt-main,
+.site-main.rs-smart-layout-wt-main {
+	width: 100% !important;
+	max-width: 100% !important;
+	padding: 40px 0 !important;
+	margin: 0 !important;
+	box-sizing: border-box !important;
+}
+
+/* ==========================================================================
+   Grid 佈局容器
+   ========================================================================== */
+
+.rs-layout-container-wt {
+	width: 100% !important;
+	max-width: 1280px !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
+	padding-left: 20px !important;
+	padding-right: 20px !important;
+	box-sizing: border-box !important;
+}
+
+.rs-card-grid-wt {
+	display: grid !important;
+	gap: 24px !important;
+	margin-bottom: 40px !important;
+	list-style: none !important;
+	padding: 0 !important;
+}
+
+/* 手機/平板：2 欄 */
+@media (max-width: 1023px) {
+	.rs-card-grid-wt {
+		grid-template-columns: repeat(2, 1fr) !important;
+		gap: 16px !important;
+	}
+
+	.rs-full-width-wt,
+	#primary.rs-full-width-wt,
+	.content-area.rs-full-width-wt {
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+	}
+
+	.rs-smart-layout-wt-main {
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+	}
+
+	.rs-layout-container-wt {
+		padding-left: 15px !important;
+		padding-right: 15px !important;
+		margin-left: auto !important;
+		margin-right: auto !important;
+	}
+}
+
+/* 桌面：4 欄 */
+@media (min-width: 1024px) {
+	.rs-card-grid-wt {
+		grid-template-columns: repeat(4, 1fr) !important;
+		gap: 24px !important;
+	}
+}
+
+/* ==========================================================================
+   卡片樣式（無陰影、無框線）
+   ========================================================================== */
+
+.rs-card-wt,
+a.rs-card-wt {
+	display: block !important;
+	background: #fff !important;
+	overflow: hidden !important;
+	transition: all 0.3s ease !important;
+	text-decoration: none !important;
+	color: inherit !important;
+	box-sizing: border-box !important;
+}
+
+.rs-card-wt:hover,
+a.rs-card-wt:hover {
+	background: #F2EFEA !important;
+	transform: translateY(-4px) !important;
+}
+
+/* 卡片圖片區域 */
+.rs-card-image-wt {
+	width: 100% !important;
+	aspect-ratio: 4 / 3 !important;
+	overflow: hidden !important;
+	background: #f5f5f5 !important;
+	position: relative !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+}
+
+.rs-card-image-wt img {
+	width: 100% !important;
+	height: 100% !important;
+	object-fit: contain !important;
+	display: block !important;
+	transition: transform 0.3s ease !important;
+}
+
+.rs-card-wt:hover .rs-card-image-wt img {
+	transform: scale(1.05) !important;
+}
+
+/* 卡片標題 */
+.rs-card-title-wt {
+	padding: 20px !important;
+	margin: 0 !important;
+	font-size: 1.125rem !important;
+	font-weight: 600 !important;
+	line-height: 1.4 !important;
+	color: #333 !important;
+	transition: color 0.3s ease !important;
+}
+
+.rs-card-wt:hover .rs-card-title-wt {
+	color: #000 !important;
+}
+
+/* 無圖片卡片樣式 */
+.rs-card-wt.no-image .rs-card-title-wt {
+	padding: 40px 20px !important;
+	text-align: center !important;
+	min-height: 120px !important;
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+}
+
+/* ==========================================================================
+   分頁導航
+   ========================================================================== */
+
+.rs-pagination {
+	margin-top: 60px;
+	text-align: center;
+}
+
+.rs-pagination .page-numbers {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.rs-pagination .page-numbers li {
+	display: inline-block;
+}
+
+.rs-pagination .page-numbers a,
+.rs-pagination .page-numbers span {
+	display: inline-block;
+	padding: 10px 16px;
+	min-width: 44px;
+	text-align: center;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	color: #333;
+	text-decoration: none;
+	transition: all 0.3s ease;
+}
+
+.rs-pagination .page-numbers a:hover {
+	background: #F2EFEA;
+	border-color: #999;
+}
+
+.rs-pagination .page-numbers .current {
+	background: #333;
+	color: #fff;
+	border-color: #333;
+	font-weight: 600;
+}
+
+.rs-pagination .page-numbers .prev,
+.rs-pagination .page-numbers .next {
+	font-weight: 600;
+}
+
+/* ==========================================================================
+   無結果訊息
+   ========================================================================== */
+
+.rs-no-results {
+	text-align: center;
+	padding: 60px 20px;
+	font-size: 1.125rem;
+	color: #999;
+}
+
+/* ==========================================================================
+   響應式優化
+   ========================================================================== */
+
+/* 小手機 (< 480px) */
+@media (max-width: 479px) {
+	.rs-archive-title {
+		font-size: 1.75rem;
+	}
+
+	.rs-card-title-wt {
+		font-size: 1rem;
+		padding: 15px;
+	}
+
+	.rs-card-wt.no-image .rs-card-title-wt {
+		padding: 30px 15px;
+		min-height: 100px;
+	}
+
+	.rs-pagination .page-numbers a,
+	.rs-pagination .page-numbers span {
+		padding: 8px 12px;
+		min-width: 40px;
+		font-size: 0.875rem;
+	}
+}
+
+/* 平板 (480px - 1023px) */
+@media (min-width: 480px) and (max-width: 1023px) {
+	.rs-archive-title {
+		font-size: 2rem;
+	}
+}
+
+/* 大桌面 (> 1280px) */
+@media (min-width: 1280px) {
+	.rs-layout-container-wt {
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+	}
+}
+
+/* ==========================================================================
+   可訪問性增強
+   ========================================================================== */
+
+.rs-card-wt:focus {
+	outline: 2px solid #4A90E2;
+	outline-offset: 2px;
+}
+
+.rs-card-wt:focus:not(:focus-visible) {
+	outline: none;
+}
+
+/* 減少動畫效果（尊重用戶偏好） */
+@media (prefers-reduced-motion: reduce) {
+	.rs-card-wt,
+	.rs-card-image-wt img,
+	.rs-card-title-wt,
+	.rs-pagination .page-numbers a,
+	.rs-pagination .page-numbers span {
+		transition: none;
+	}
+}
+
+/* ==========================================================================
+   列印樣式
+   ========================================================================== */
+
+@media print {
+	.rs-card-wt {
+		page-break-inside: avoid;
+	}
+
+	.rs-card-wt:hover {
+		transform: none;
+		background: #fff;
+	}
+
+	.rs-pagination {
+		display: none;
+	}
+}
