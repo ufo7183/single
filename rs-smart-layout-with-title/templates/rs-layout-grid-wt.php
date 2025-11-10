@@ -28,7 +28,8 @@ get_header();
 				<?php
 				// 顯示面包屑
 				if ( function_exists( 'is_shop' ) && is_shop() ) :
-					echo '<div class="rs-breadcrumb">' . esc_html( woocommerce_page_title( false ) ) . '</div>';
+					// Shop 頁面：顯示頁面標題
+					echo '<div class="rs-breadcrumb"><span class="current-term">' . esc_html( woocommerce_page_title( false ) ) . '</span></div>';
 				elseif ( $queried_object ) :
 					// 獲取父分類
 					$parent_terms = array();
@@ -45,16 +46,18 @@ get_header();
 					}
 
 					// 輸出面包屑
+					echo '<div class="rs-breadcrumb">';
 					if ( ! empty( $parent_terms ) ) {
-						echo '<div class="rs-breadcrumb">';
 						foreach ( $parent_terms as $parent_term ) {
-							echo esc_html( $parent_term->name ) . ' > ';
+							$parent_link = get_term_link( $parent_term );
+							if ( ! is_wp_error( $parent_link ) ) {
+								echo '<a href="' . esc_url( $parent_link ) . '" class="parent-term">' . esc_html( $parent_term->name ) . '</a> > ';
+							}
 						}
-						echo esc_html( $queried_object->name );
-						echo '</div>';
-					} else {
-						echo '<div class="rs-breadcrumb">' . esc_html( $queried_object->name ) . '</div>';
 					}
+					// 當前分類（不是連結，黑色）
+					echo '<span class="current-term">' . esc_html( $queried_object->name ) . '</span>';
+					echo '</div>';
 				endif;
 				?>
 			</header>

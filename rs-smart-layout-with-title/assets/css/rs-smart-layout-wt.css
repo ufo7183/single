@@ -17,9 +17,26 @@
 .rs-breadcrumb {
 	font-size: 1.5rem;
 	font-weight: 600;
-	color: #333;
 	margin: 0;
 	padding: 0;
+	line-height: 1.6;
+}
+
+/* 父分類連結（灰色） */
+.rs-breadcrumb a.parent-term {
+	color: #EEE !important;
+	text-decoration: none !important;
+	transition: color 0.3s ease !important;
+}
+
+.rs-breadcrumb a.parent-term:hover {
+	color: #999 !important;
+	text-decoration: underline !important;
+}
+
+/* 當前分類（黑色） */
+.rs-breadcrumb .current-term {
+	color: #000 !important;
 }
 
 /* ==========================================================================
