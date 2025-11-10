@@ -229,9 +229,25 @@ if ( ! function_exists( 'yao_get_inline_categorylist_styles' ) ) {
 }
 
 /* 手機版下拉選單樣式 */
+.yao-category-mobile-select {
+    position: relative !important;
+}
+
+.yao-category-mobile-select::after {
+    content: "▼" !important;
+    position: absolute !important;
+    right: 16px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    pointer-events: none !important;
+    color: #666 !important;
+    font-size: 12px !important;
+}
+
 .yao-mobile-dropdown {
     width: 100% !important;
     padding: 12px 16px !important;
+    padding-right: 40px !important;
     font-size: 16px !important;
     font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     border: 2px solid #e0e0e0 !important;
@@ -243,11 +259,6 @@ if ( ! function_exists( 'yao_get_inline_categorylist_styles' ) ) {
     appearance: none !important;
     -webkit-appearance: none !important;
     -moz-appearance: none !important;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
-    background-repeat: no-repeat !important;
-    background-position: right 12px center !important;
-    background-size: 20px !important;
-    padding-right: 40px !important;
 }
 
 .yao-mobile-dropdown:focus {
