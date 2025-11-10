@@ -72,7 +72,7 @@ main.rs-smart-layout-wt-main,
 }
 
 /* 手機/平板：2 欄 */
-@media (max-width: 1023px) {
+@media (max-width: 1079px) {
 	.rs-card-grid-wt {
 		grid-template-columns: repeat(2, 1fr) !important;
 		gap: 16px !important;
@@ -99,7 +99,7 @@ main.rs-smart-layout-wt-main,
 }
 
 /* 桌面：4 欄 */
-@media (min-width: 1024px) {
+@media (min-width: 1080px) {
 	.rs-card-grid-wt {
 		grid-template-columns: repeat(4, 1fr) !important;
 		gap: 24px !important;
@@ -268,8 +268,8 @@ a.rs-card-wt:hover {
 	}
 }
 
-/* 平板 (480px - 1023px) */
-@media (min-width: 480px) and (max-width: 1023px) {
+/* 平板 (480px - 1079px) */
+@media (min-width: 480px) and (max-width: 1079px) {
 	.rs-archive-title {
 		font-size: 2rem;
 	}

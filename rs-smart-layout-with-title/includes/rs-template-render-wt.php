@@ -75,7 +75,7 @@ function rs_render_child_terms_wt( $child_terms, $taxonomy ) {
 		return;
 	}
 
-	echo '<div class="rs-card-wt-grid-wt rs-child-terms">';
+	echo '<div class="rs-card-grid-wt rs-child-terms">';
 
 	foreach ( $child_terms as $term ) {
 		$term_link  = get_term_link( $term );
@@ -85,7 +85,7 @@ function rs_render_child_terms_wt( $child_terms, $taxonomy ) {
 			continue;
 		}
 
-		$card_class = 'rs-card';
+		$card_class = 'rs-card-wt';
 		if ( ! $term_image ) {
 			$card_class .= ' no-image';
 		}
@@ -115,7 +115,7 @@ function rs_render_posts_wt( $query ) {
 		return;
 	}
 
-	echo '<div class="rs-card-wt-grid-wt rs-posts">';
+	echo '<div class="rs-card-grid-wt rs-posts">';
 
 	while ( $query->have_posts() ) {
 		$query->the_post();
@@ -125,7 +125,7 @@ function rs_render_posts_wt( $query ) {
 		$has_thumbnail  = has_post_thumbnail();
 		$thumbnail_url  = $has_thumbnail ? get_the_post_thumbnail_url( get_the_ID(), 'medium_large' ) : false;
 
-		$card_class = 'rs-card';
+		$card_class = 'rs-card-wt';
 		if ( ! $has_thumbnail ) {
 			$card_class .= ' no-image';
 		}
