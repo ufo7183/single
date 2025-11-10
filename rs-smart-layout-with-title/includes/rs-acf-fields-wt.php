@@ -1,8 +1,8 @@
 <?php
 /**
- * RS Smart Layout - ACF 欄位註冊
+ * RS Smart Layout WT - ACF 欄位註冊
  *
- * @package RS_Smart_Layout
+ * @package RS_Smart_Layout_WT
  */
 
 // 防止直接訪問
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * 註冊 ACF 欄位群組
  */
-function rs_register_acf_fields() {
+function rs_register_acf_fields_wt() {
 	// 檢查 ACF 是否存在
 	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
 		return;
@@ -21,11 +21,11 @@ function rs_register_acf_fields() {
 
 	acf_add_local_field_group(
 		array(
-			'key'                   => 'group_rs_taxonomy_image',
-			'title'                 => '分類圖片',
+			'key'                   => 'group_rs_taxonomy_image_wt',
+			'title'                 => '分類圖片 (WT)',
 			'fields'                => array(
 				array(
-					'key'               => 'field_rs_category_image',
+					'key'               => 'field_rs_category_image_wt',
 					'label'             => '分類圖片',
 					'name'              => 'category_image',
 					'type'              => 'image',
@@ -57,17 +57,17 @@ function rs_register_acf_fields() {
 	);
 }
 
-add_action( 'acf/init', 'rs_register_acf_fields' );
+add_action( 'acf/init', 'rs_register_acf_fields_wt' );
 
 /**
  * 顯示 ACF 未啟用的管理員通知
  */
-function rs_acf_admin_notice() {
+function rs_acf_admin_notice_wt() {
 	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
 		?>
 		<div class="notice notice-warning is-dismissible">
 			<p>
-				<strong>RS Smart Layout:</strong>
+				<strong>RS Smart Layout With Title:</strong>
 				<?php esc_html_e( '此外掛需要 Advanced Custom Fields (ACF) 外掛才能完整運作。請安裝並啟用 ACF。', 'rs-smart-layout-wt' ); ?>
 			</p>
 		</div>
@@ -75,4 +75,5 @@ function rs_acf_admin_notice() {
 	}
 }
 
-add_action( 'admin_notices', 'rs_acf_admin_notice' );
+add_action( 'admin_notices', 'rs_acf_admin_notice_wt' );
+
