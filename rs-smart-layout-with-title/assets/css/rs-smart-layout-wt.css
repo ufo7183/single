@@ -63,8 +63,11 @@ main.rs-smart-layout-wt-main,
 	box-sizing: border-box !important;
 }
 
-.rs-card-grid-wt {
+.rs-card-grid-wt,
+div.rs-card-grid-wt,
+.rs-layout-container-wt .rs-card-grid-wt {
 	display: grid !important;
+	grid-template-columns: repeat(4, 1fr) !important;
 	gap: 24px !important;
 	margin-bottom: 40px !important;
 	list-style: none !important;
@@ -73,7 +76,9 @@ main.rs-smart-layout-wt-main,
 
 /* 手機/平板：2 欄 */
 @media (max-width: 1079px) {
-	.rs-card-grid-wt {
+	.rs-card-grid-wt,
+	div.rs-card-grid-wt,
+	.rs-layout-container-wt .rs-card-grid-wt {
 		grid-template-columns: repeat(2, 1fr) !important;
 		gap: 16px !important;
 	}
@@ -100,7 +105,9 @@ main.rs-smart-layout-wt-main,
 
 /* 桌面：4 欄 */
 @media (min-width: 1080px) {
-	.rs-card-grid-wt {
+	.rs-card-grid-wt,
+	div.rs-card-grid-wt,
+	.rs-layout-container-wt .rs-card-grid-wt {
 		grid-template-columns: repeat(4, 1fr) !important;
 		gap: 24px !important;
 	}
@@ -111,7 +118,9 @@ main.rs-smart-layout-wt-main,
    ========================================================================== */
 
 .rs-card-wt,
-a.rs-card-wt {
+a.rs-card-wt,
+.rs-card-grid-wt .rs-card-wt,
+.rs-card-grid-wt a.rs-card-wt {
 	display: block !important;
 	background: #fff !important;
 	overflow: hidden !important;
@@ -119,6 +128,7 @@ a.rs-card-wt {
 	text-decoration: none !important;
 	color: inherit !important;
 	box-sizing: border-box !important;
+	width: 100% !important;
 }
 
 .rs-card-wt:hover,
