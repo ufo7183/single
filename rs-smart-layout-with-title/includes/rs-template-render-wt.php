@@ -92,11 +92,11 @@ function rs_render_child_terms_wt( $child_terms, $taxonomy ) {
 		?>
 		<a href="<?php echo esc_url( $term_link ); ?>" class="<?php echo esc_attr( $card_class ); ?>">
 			<?php if ( $term_image ) : ?>
-				<div class="rs-card-wt-image">
+				<div class="rs-card-image-wt">
 					<img src="<?php echo esc_url( $term_image ); ?>" alt="<?php echo esc_attr( $term->name ); ?>" loading="lazy">
 				</div>
 			<?php endif; ?>
-			<h3 class="rs-card-wt-title"><?php echo esc_html( $term->name ); ?></h3>
+			<h3 class="rs-card-title-wt"><?php echo esc_html( $term->name ); ?></h3>
 		</a>
 		<?php
 	}
@@ -132,11 +132,11 @@ function rs_render_posts_wt( $query ) {
 		?>
 		<a href="<?php echo esc_url( $post_link ); ?>" class="<?php echo esc_attr( $card_class ); ?>">
 			<?php if ( $thumbnail_url ) : ?>
-				<div class="rs-card-wt-image">
+				<div class="rs-card-image-wt">
 					<img src="<?php echo esc_url( $thumbnail_url ); ?>" alt="<?php echo esc_attr( $post_title ); ?>" loading="lazy">
 				</div>
 			<?php endif; ?>
-			<h3 class="rs-card-wt-title"><?php echo esc_html( $post_title ); ?></h3>
+			<h3 class="rs-card-title-wt"><?php echo esc_html( $post_title ); ?></h3>
 		</a>
 		<?php
 	}

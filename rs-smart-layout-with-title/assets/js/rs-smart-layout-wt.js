@@ -52,11 +52,11 @@
 	 * 圖片載入錯誤處理
 	 */
 	function initImageErrorHandling() {
-		$('.rs-card-wt-image img').on('error', function() {
+		$('.rs-card-image-wt img').on('error', function() {
 			var $card = $(this).closest('.rs-card-wt');
 
 			// 移除圖片區域
-			$(this).closest('.rs-card-wt-image').remove();
+			$(this).closest('.rs-card-image-wt').remove();
 
 			// 添加 no-image 類別
 			$card.addClass('no-image');
