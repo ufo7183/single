@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @param string $template 原始模板路徑
  * @return string 新的模板路徑
  */
-function rs_smart_template_router( $template ) {
+function rs_smart_template_router_wt( $template ) {
 	// 檢查是否為需要套用的頁面類型
 	$should_apply = is_category()
 		|| is_tax()
@@ -39,4 +39,4 @@ function rs_smart_template_router( $template ) {
 	return $template;
 }
 
-add_filter( 'template_include', 'rs_smart_template_router', 99 );
+add_filter( 'template_include', 'rs_smart_template_router_wt', 99 );

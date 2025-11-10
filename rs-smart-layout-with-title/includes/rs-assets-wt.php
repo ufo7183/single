@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * 載入前端樣式和腳本
  */
-function rs_enqueue_assets() {
+function rs_enqueue_assets_wt() {
 	// 只在前端載入
 	if ( is_admin() ) {
 		return;
@@ -92,4 +92,4 @@ function rs_enqueue_assets() {
 	wp_add_inline_style( 'rs-smart-layout-wt', $inline_css );
 }
 
-add_action( 'wp_enqueue_scripts', 'rs_enqueue_assets', 999 );
+add_action( 'wp_enqueue_scripts', 'rs_enqueue_assets_wt', 999 );
