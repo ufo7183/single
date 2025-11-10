@@ -540,3 +540,4 @@ if ( ! function_exists( 'yao_check_children_active' ) ) {
 if ( ! shortcode_exists( 'yao_categorylist' ) ) {
     add_shortcode( 'yao_categorylist', 'yao_categorylist_shortcode_handler' );
 }
+
