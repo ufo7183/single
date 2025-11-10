@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @param string $taxonomy 分類法名稱
  * @return array|false 子分類數組或 false
  */
-function rs_get_child_terms( $term_id, $taxonomy ) {
+function rs_get_child_terms_wt( $term_id, $taxonomy ) {
 	$args = array(
 		'taxonomy'   => $taxonomy,
 		'parent'     => $term_id,
@@ -42,7 +42,7 @@ function rs_get_child_terms( $term_id, $taxonomy ) {
  * @param string $size 圖片尺寸
  * @return string|false 圖片 URL 或 false
  */
-function rs_get_term_image( $term_id, $size = 'medium_large' ) {
+function rs_get_term_image_wt( $term_id, $size = 'medium_large' ) {
 	// 檢查 ACF 是否存在
 	if ( ! function_exists( 'get_field' ) ) {
 		return false;
@@ -70,7 +70,7 @@ function rs_get_term_image( $term_id, $size = 'medium_large' ) {
  * @param array  $child_terms 子分類數組
  * @param string $taxonomy 分類法名稱
  */
-function rs_render_child_terms( $child_terms, $taxonomy ) {
+function rs_render_child_terms_wt( $child_terms, $taxonomy ) {
 	if ( empty( $child_terms ) ) {
 		return;
 	}
@@ -79,7 +79,7 @@ function rs_render_child_terms( $child_terms, $taxonomy ) {
 
 	foreach ( $child_terms as $term ) {
 		$term_link  = get_term_link( $term );
-		$term_image = rs_get_term_image( $term->term_id );
+		$term_image = rs_get_term_image_wt( $term->term_id );
 
 		if ( is_wp_error( $term_link ) ) {
 			continue;
@@ -109,7 +109,7 @@ function rs_render_child_terms( $child_terms, $taxonomy ) {
  *
  * @param WP_Query $query 文章查詢對象
  */
-function rs_render_posts( $query ) {
+function rs_render_posts_wt( $query ) {
 	if ( ! $query || ! $query->have_posts() ) {
 		echo '<p class="rs-no-results">' . esc_html__( '目前沒有內容。', 'rs-smart-layout-wt' ) . '</p>';
 		return;
@@ -151,7 +151,7 @@ function rs_render_posts( $query ) {
  *
  * @param WP_Query $query 文章查詢對象
  */
-function rs_render_pagination( $query ) {
+function rs_render_pagination_wt( $query ) {
 	if ( ! $query || $query->max_num_pages <= 1 ) {
 		return;
 	}
@@ -178,7 +178,7 @@ function rs_render_pagination( $query ) {
 /**
  * 執行智慧判定並渲染內容
  */
-function rs_smart_render() {
+function rs_smart_render_wt() {
 	// 檢查是否為 Shop 頁面
 	if ( function_exists( 'is_shop' ) && is_shop() ) {
 		// Shop 頁面：顯示所有第一層商品分類
@@ -193,7 +193,7 @@ function rs_smart_render() {
 		);
 
 		if ( ! is_wp_error( $top_level_categories ) && ! empty( $top_level_categories ) ) {
-			rs_render_child_terms( $top_level_categories, 'product_cat' );
+			rs_render_child_terms_wt( $top_level_categories, 'product_cat' );
 		} else {
 			echo '<p class="rs-no-results">' . esc_html__( '目前沒有商品分類。', 'rs-smart-layout-wt' ) . '</p>';
 		}
@@ -211,11 +211,11 @@ function rs_smart_render() {
 	$taxonomy = $queried_object->taxonomy;
 
 	// 檢查是否有子分類
-	$child_terms = rs_get_child_terms( $term_id, $taxonomy );
+	$child_terms = rs_get_child_terms_wt( $term_id, $taxonomy );
 
 	if ( $child_terms ) {
 		// 有子分類：顯示子分類卡片
-		rs_render_child_terms( $child_terms, $taxonomy );
+		rs_render_child_terms_wt( $child_terms, $taxonomy );
 	} else {
 		// 無子分類：顯示文章卡片
 		$paged = get_query_var( 'paged' ) ? absint( get_query_var( 'paged' ) ) : 1;
@@ -245,7 +245,7 @@ function rs_smart_render() {
 
 		$query = new WP_Query( $args );
 
-		rs_render_posts( $query );
-		rs_render_pagination( $query );
+		rs_render_posts_wt( $query );
+		rs_render_pagination_wt( $query );
 	}
 }
