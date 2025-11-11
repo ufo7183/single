@@ -86,7 +86,7 @@
       z-index: 1;
     }
 
-    /* 桌機左右卡片 overlay（僅 ≥1280px） */
+    /* 非 active 卡片 overlay（所有設備） */
     .rsmeg-root .rsmeg-slide.rsmeg-is-adjacent::after {
       content: '';
       position: absolute;
@@ -111,11 +111,6 @@
       .rsmeg-root .rsmeg-swiper {
         overflow: visible; /* 允許邊緣預覽 */
       }
-
-      /* 手機不顯示 overlay */
-      .rsmeg-root .rsmeg-slide.rsmeg-is-adjacent::after {
-        content: none;
-      }
     }
 
     /* ============================
@@ -125,11 +120,6 @@
       .rsmeg-root .rsmeg-img {
         aspect-ratio: 380 / 213.75;
         max-width: 380px;
-      }
-
-      /* 平板不顯示 overlay */
-      .rsmeg-root .rsmeg-slide.rsmeg-is-adjacent::after {
-        content: none;
       }
     }
 
@@ -439,48 +429,21 @@
     }
   });
 
-  // 更新桌機 overlay 效果
+  // 更新 overlay 效果（所有設備）
   function updateOverlay(swiperInstance) {
-    // 僅在桌機斷點 (≥1280px) 且非手機模式執行
-    if (window.innerWidth < 1280) {
-      // 非桌機：移除所有 overlay class
-      const allSlides = rootEl.querySelectorAll('.rsmeg-slide');
-      allSlides.forEach(slide => slide.classList.remove('rsmeg-is-adjacent'));
-      return;
-    }
-
-    // 桌機模式：計算相鄰卡片
     const slides = swiperInstance.slides;
-    const realIndex = swiperInstance.realIndex;
-    const totalSlides = slides.length;
+    const activeIndex = swiperInstance.activeIndex;
 
     // 移除所有 adjacent class
     slides.forEach(slide => slide.classList.remove('rsmeg-is-adjacent'));
 
-    // loop 模式下，需要使用 realIndex
-    if (loopEnabled) {
-      // 找到真實索引對應的 DOM 元素
-      slides.forEach((slide, idx) => {
-        const slideRealIndex = parseInt(slide.getAttribute('data-swiper-slide-index') || idx, 10);
-
-        // 計算前後相鄰索引（考慮循環）
-        const prevIndex = (realIndex - 1 + totalSlides) % totalSlides;
-        const nextIndex = (realIndex + 1) % totalSlides;
-
-        if (slideRealIndex === prevIndex || slideRealIndex === nextIndex) {
-          slide.classList.add('rsmeg-is-adjacent');
-        }
-      });
-    } else {
-      // 非 loop 模式
-      const activeIndex = swiperInstance.activeIndex;
-      if (activeIndex > 0 && slides[activeIndex - 1]) {
-        slides[activeIndex - 1].classList.add('rsmeg-is-adjacent');
+    // 給所有 slides 加上 overlay，但排除 active slide
+    slides.forEach((slide, idx) => {
+      // 跳過 active slide（保持亮的）
+      if (idx !== activeIndex) {
+        slide.classList.add('rsmeg-is-adjacent');
       }
-      if (activeIndex < slides.length - 1 && slides[activeIndex + 1]) {
-        slides[activeIndex + 1].classList.add('rsmeg-is-adjacent');
-      }
-    }
+    });
   }
 
   // 互動暫停邏輯
