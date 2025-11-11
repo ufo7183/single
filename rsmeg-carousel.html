@@ -386,7 +386,7 @@
       1280: {
         slidesPerView: 3,
         spaceBetween: 24,
-        centeredSlides: false
+        centeredSlides: true  // 改為 true，讓 active slide 位於中間
       }
     },
 
@@ -417,13 +417,10 @@
 
     // 只在桌機模式（≥1280px）加 overlay
     if (window.innerWidth >= 1280) {
-      // 中間卡片索引（activeIndex + 1）
-      const middleIndex = activeIndex + 1;
-
-      // 給所有可見的 slides 加 class，但排除中間那張
+      // 給所有可見的 slides 加 class，但排除 active（中間卡片）
       slides.forEach((slide, idx) => {
-        // 檢查是否為可見的卡片，且不是中間卡片
-        if (slide.classList.contains('swiper-slide-visible') && idx !== middleIndex) {
+        // centeredSlides: true 時，activeIndex 就是中間卡片
+        if (slide.classList.contains('swiper-slide-visible') && idx !== activeIndex) {
           slide.classList.add('rsmeg-is-adjacent');
         }
       });
