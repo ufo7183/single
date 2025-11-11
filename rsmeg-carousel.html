@@ -70,12 +70,10 @@
       position: relative;
     }
 
-    /* 桌機左右卡片透明度 50%（僅 ≥1280px） */
-    @media (min-width: 1280px) {
-      .rsmeg-root .rsmeg-slide.rsmeg-is-adjacent {
-        opacity: 0.5;
-        transition: opacity 0.3s ease;
-      }
+    /* 左右卡片透明度 50%（所有設備） */
+    .rsmeg-root .rsmeg-slide.rsmeg-is-adjacent {
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
     }
 
     /* ============================
@@ -411,7 +409,7 @@
     }
   });
 
-  // 更新 overlay 效果（僅桌機）
+  // 更新 overlay 效果（所有設備）
   function updateOverlay(swiperInstance) {
     const slides = swiperInstance.slides;
     const activeIndex = swiperInstance.activeIndex;
@@ -419,17 +417,13 @@
     // 移除所有 adjacent class
     slides.forEach(slide => slide.classList.remove('rsmeg-is-adjacent'));
 
-    // 只在桌機模式（≥1280px）加 overlay
-    if (window.innerWidth >= 1280) {
-      // 給所有可見的 slides 加 class，但排除 active（中間卡片）
-      slides.forEach((slide, idx) => {
-        // centeredSlides: true 時，activeIndex 就是中間卡片
-        if (slide.classList.contains('swiper-slide-visible') && idx !== activeIndex) {
-          slide.classList.add('rsmeg-is-adjacent');
-        }
-      });
-    }
-    // 平板和手機：不做任何操作（不加 overlay class）
+    // 給所有可見的 slides 加 class，但排除 active（中間/主卡片）
+    slides.forEach((slide, idx) => {
+      // centeredSlides: true 時，activeIndex 就是中間卡片
+      if (slide.classList.contains('swiper-slide-visible') && idx !== activeIndex) {
+        slide.classList.add('rsmeg-is-adjacent');
+      }
+    });
   }
 
   // 互動暫停邏輯
