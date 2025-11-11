@@ -86,16 +86,21 @@
       z-index: 1;
     }
 
-    /* 非 active 卡片 overlay（所有設備） */
-    .rsmeg-root .rsmeg-slide.rsmeg-is-adjacent::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.35);
-      border-radius: 16px;
-      pointer-events: none;
-      z-index: 2;
-      transition: opacity 0.3s ease;
+    /* 桌機左右卡片 overlay（僅 ≥1280px） */
+    @media (min-width: 1280px) {
+      .rsmeg-root .rsmeg-slide.rsmeg-is-adjacent::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(210deg,
+          rgba(57, 54, 49, 0.00) 53.85%,
+          rgba(57, 54, 49, 0.44) 66.02%,
+          rgba(57, 54, 49, 0.80) 85.52%);
+        border-radius: 16px;
+        pointer-events: none;
+        z-index: 2;
+        transition: opacity 0.3s ease;
+      }
     }
 
     /* ============================
@@ -298,7 +303,7 @@
           <div class="rsmeg-slide swiper-slide">
             <img class="rsmeg-img"
                  alt="輪播圖片 1"
-                 src="https://placehold.co/380x214/E83743/FFFFFF?text=Slide+1"
+                 src="https://wordpress-1391714-5974466.cloudwaysapps.com/wp-content/uploads/2025/11/Group-601210-2.png"
                  loading="lazy">
           </div>
 
@@ -306,7 +311,7 @@
           <div class="rsmeg-slide swiper-slide">
             <img class="rsmeg-img"
                  alt="輪播圖片 2"
-                 src="https://placehold.co/380x214/FF6B6B/FFFFFF?text=Slide+2"
+                 src="https://wordpress-1391714-5974466.cloudwaysapps.com/wp-content/uploads/2025/11/Group-601210-2.png"
                  loading="lazy">
           </div>
 
@@ -314,7 +319,7 @@
           <div class="rsmeg-slide swiper-slide">
             <img class="rsmeg-img"
                  alt="輪播圖片 3"
-                 src="https://placehold.co/380x214/4ECDC4/FFFFFF?text=Slide+3"
+                 src="https://wordpress-1391714-5974466.cloudwaysapps.com/wp-content/uploads/2025/11/Group-601210-2.png"
                  loading="lazy">
           </div>
 
@@ -322,7 +327,7 @@
           <div class="rsmeg-slide swiper-slide">
             <img class="rsmeg-img"
                  alt="輪播圖片 4"
-                 src="https://placehold.co/380x214/45B7D1/FFFFFF?text=Slide+4"
+                 src="https://wordpress-1391714-5974466.cloudwaysapps.com/wp-content/uploads/2025/11/Group-601210-2.png"
                  loading="lazy">
           </div>
 
@@ -330,7 +335,7 @@
           <div class="rsmeg-slide swiper-slide">
             <img class="rsmeg-img"
                  alt="輪播圖片 5"
-                 src="https://placehold.co/380x214/96CEB4/FFFFFF?text=Slide+5"
+                 src="https://wordpress-1391714-5974466.cloudwaysapps.com/wp-content/uploads/2025/11/Group-601210-2.png"
                  loading="lazy">
           </div>
 
@@ -338,7 +343,7 @@
           <div class="rsmeg-slide swiper-slide">
             <img class="rsmeg-img"
                  alt="輪播圖片 6"
-                 src="https://placehold.co/380x214/FFEAA7/333333?text=Slide+6"
+                 src="https://wordpress-1391714-5974466.cloudwaysapps.com/wp-content/uploads/2025/11/Group-601210-2.png"
                  loading="lazy">
           </div>
 
@@ -429,7 +434,7 @@
     }
   });
 
-  // 更新 overlay 效果（所有設備）
+  // 更新 overlay 效果（僅桌機）
   function updateOverlay(swiperInstance) {
     const slides = swiperInstance.slides;
     const activeIndex = swiperInstance.activeIndex;
@@ -437,13 +442,22 @@
     // 移除所有 adjacent class
     slides.forEach(slide => slide.classList.remove('rsmeg-is-adjacent'));
 
-    // 給所有 slides 加上 overlay，但排除 active slide
-    slides.forEach((slide, idx) => {
-      // 跳過 active slide（保持亮的）
-      if (idx !== activeIndex) {
-        slide.classList.add('rsmeg-is-adjacent');
+    // 只在桌機模式（≥1280px）加 overlay 到左右相鄰卡片
+    if (window.innerWidth >= 1280) {
+      const prevIndex = activeIndex - 1;
+      const nextIndex = activeIndex + 1;
+
+      // 左邊相鄰卡片
+      if (prevIndex >= 0 && slides[prevIndex]) {
+        slides[prevIndex].classList.add('rsmeg-is-adjacent');
       }
-    });
+
+      // 右邊相鄰卡片
+      if (nextIndex < slides.length && slides[nextIndex]) {
+        slides[nextIndex].classList.add('rsmeg-is-adjacent');
+      }
+    }
+    // 平板和手機：不做任何操作（不加 overlay class）
   }
 
   // 互動暫停邏輯
