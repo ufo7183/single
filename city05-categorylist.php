@@ -314,7 +314,6 @@ if (!function_exists('city05_categorylist_shortcode_handler')) {
 
     text-decoration: none;
     white-space: nowrap;
-    cursor: pointer;
 }
 
 /* Hover 和 Active 狀態（樣式相同） */
@@ -457,14 +456,12 @@ CSS;
             let isDown = false;
             let startX;
             let scrollLeft;
+            let hasMoved = false;
 
             // 滑鼠拖曳滾動
             list.addEventListener('mousedown', (e) => {
-                // 如果點擊的是連結，不啟動拖曳
-                if (e.target.tagName === 'A' || e.target.closest('a')) {
-                    return;
-                }
                 isDown = true;
+                hasMoved = false;
                 list.style.cursor = 'grabbing';
                 list.style.userSelect = 'none';
                 startX = e.pageX - list.offsetLeft;
@@ -486,10 +483,19 @@ CSS;
             list.addEventListener('mousemove', (e) => {
                 if (!isDown) return;
                 e.preventDefault();
+                hasMoved = true;
                 const x = e.pageX - list.offsetLeft;
                 const walk = (x - startX) * 2;
                 list.scrollLeft = scrollLeft - walk;
             });
+
+            // 阻止拖曳後的點擊事件
+            list.addEventListener('click', (e) => {
+                if (hasMoved) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }, true);
 
             // 初始設置游標樣式
             list.style.cursor = 'grab';

@@ -380,7 +380,7 @@ if (!function_exists('rscat_categorylist_shortcode_handler')) {
             echo '.rscat-category-list { list-style: none; padding: 0; margin: 0; display: flex; align-items: center; gap: 10px; overflow-x: auto; overflow-y: hidden; white-space: nowrap; scrollbar-width: none; -ms-overflow-style: none; }';
             echo '.rscat-category-list::-webkit-scrollbar { display: none; }';
             echo '.rscat-category-item { margin: 0; padding: 0; flex-shrink: 0; }';
-            echo '.rscat-category-link { display: flex; ' . $button_normal_css . ' ' . $text_normal_css . ' text-decoration: none; white-space: nowrap; cursor: pointer; }';
+            echo '.rscat-category-link { display: flex; ' . $button_normal_css . ' ' . $text_normal_css . ' text-decoration: none; white-space: nowrap; }';
             echo '.rscat-category-link:hover, .rscat-category-link:focus, .rscat-category-link.rscat-category-link-active { display: flex; ' . $button_active_css . ' ' . $text_active_css . ' }';
             echo '</style>';
 
@@ -485,14 +485,12 @@ if (!function_exists('rscat_categorylist_shortcode_handler')) {
             let isDown = false;
             let startX;
             let scrollLeft;
+            let hasMoved = false;
 
             // 滑鼠拖曳滾動
             list.addEventListener('mousedown', (e) => {
-                // 如果點擊的是連結，不啟動拖曳
-                if (e.target.tagName === 'A' || e.target.closest('a')) {
-                    return;
-                }
                 isDown = true;
+                hasMoved = false;
                 list.style.cursor = 'grabbing';
                 list.style.userSelect = 'none';
                 startX = e.pageX - list.offsetLeft;
@@ -514,10 +512,19 @@ if (!function_exists('rscat_categorylist_shortcode_handler')) {
             list.addEventListener('mousemove', (e) => {
                 if (!isDown) return;
                 e.preventDefault();
+                hasMoved = true;
                 const x = e.pageX - list.offsetLeft;
                 const walk = (x - startX) * 2;
                 list.scrollLeft = scrollLeft - walk;
             });
+
+            // 阻止拖曳後的點擊事件
+            list.addEventListener('click', (e) => {
+                if (hasMoved) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }, true);
 
             // 初始設置游標樣式
             list.style.cursor = 'grab';
