@@ -101,6 +101,10 @@
         aspect-ratio: 380 / 213.75;
         max-width: 380px;
       }
+
+      .rsmeg-root .rsmeg-swiper {
+        overflow: visible; /* 允許邊緣預覽 */
+      }
     }
 
     /* ============================
@@ -372,21 +376,21 @@
     breakpoints: {
       // 手機 (<768px)
       0: {
-        slidesPerView: 1,
+        slidesPerView: 1.15,  // 部分可見：露出左右邊緣
         spaceBetween: 12,
         centeredSlides: true
       },
       // 平板 (768-1279px)
       768: {
-        slidesPerView: 2,
+        slidesPerView: 1.6,   // 部分可見：主卡在中間，左右露出
         spaceBetween: 16,
-        centeredSlides: false
+        centeredSlides: true   // 讓主卡置中
       },
       // 桌機 (≥1280px)
       1280: {
         slidesPerView: 3,
         spaceBetween: 24,
-        centeredSlides: true  // 改為 true，讓 active slide 位於中間
+        centeredSlides: true
       }
     },
 
