@@ -469,15 +469,34 @@ if (!function_exists('rscat_categorylist_shortcode_handler')) {
         echo '</ul>';
         echo '</div>';
 
-        // 添加 JavaScript 實現橫向拖曳滾動
-        static $rscat_scroll_script_loaded = false;
-        if (!$rscat_scroll_script_loaded) {
-            echo <<<'JAVASCRIPT'
-<script>
+        // 在前端載入拖拉腳本（只會掛一次）
+        if (!is_admin()) {
+            rscat_categorylist_enqueue_script();
+        }
+
+        return ob_get_clean();
+    }
+}
+
+if (!shortcode_exists('rscat_categorylist')) {
+    add_shortcode('rscat_categorylist', 'rscat_categorylist_shortcode_handler');
+}
+
+// 只負責把前端拖拉腳本掛進頁面（footer），避免在 shortcode 內輸出 <script>
+if (!function_exists('rscat_categorylist_enqueue_script')) {
+    function rscat_categorylist_enqueue_script() {
+        static $enqueued = false;
+        if ($enqueued) return; // 僅注入一次
+        $enqueued = true;
+
+        // 建立一個空的 handle，再把 JS 以 inline 方式掛上去
+        wp_register_script('rscat-categorylist', false, array(), '1.0', true);
+        wp_enqueue_script('rscat-categorylist');
+
+        $drag_js = <<<JS
 (function() {
     function initRscatCategoryScroll() {
         const containers = document.querySelectorAll('.rscat-category-list-container');
-
         containers.forEach(container => {
             const list = container.querySelector('.rscat-category-list');
             if (!list) return;
@@ -487,38 +506,33 @@ if (!function_exists('rscat_categorylist_shortcode_handler')) {
             let scrollLeft;
             let hasMoved = false;
 
-            // 滑鼠拖曳滾動
             list.addEventListener('mousedown', (e) => {
                 isDown = true;
                 hasMoved = false;
                 list.style.cursor = 'grabbing';
                 list.style.userSelect = 'none';
-                startX = e.pageX - list.offsetLeft;
+                startX = e.pageX - list.getBoundingClientRect().left;
                 scrollLeft = list.scrollLeft;
             });
 
-            list.addEventListener('mouseleave', () => {
-                isDown = false;
-                list.style.cursor = 'grab';
-                list.style.userSelect = 'auto';
-            });
-
-            list.addEventListener('mouseup', () => {
-                isDown = false;
-                list.style.cursor = 'grab';
-                list.style.userSelect = 'auto';
+            ['mouseleave','mouseup'].forEach(evt => {
+                list.addEventListener(evt, () => {
+                    isDown = false;
+                    list.style.cursor = 'grab';
+                    list.style.userSelect = '';
+                });
             });
 
             list.addEventListener('mousemove', (e) => {
                 if (!isDown) return;
                 e.preventDefault();
                 hasMoved = true;
-                const x = e.pageX - list.offsetLeft;
+                const x = e.pageX - list.getBoundingClientRect().left;
                 const walk = (x - startX) * 2;
                 list.scrollLeft = scrollLeft - walk;
             });
 
-            // 阻止拖曳後的點擊事件
+            // 只有真的拖動過才阻止點擊
             list.addEventListener('click', (e) => {
                 if (hasMoved) {
                     e.preventDefault();
@@ -526,27 +540,17 @@ if (!function_exists('rscat_categorylist_shortcode_handler')) {
                 }
             }, true);
 
-            // 初始設置游標樣式
             list.style.cursor = 'grab';
         });
     }
-
-    // DOM 載入完成後執行
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initRscatCategoryScroll);
     } else {
         initRscatCategoryScroll();
     }
 })();
-</script>
-JAVASCRIPT;
-            $rscat_scroll_script_loaded = true;
-        }
+JS;
 
-        return ob_get_clean();
+        wp_add_inline_script('rscat-categorylist', $drag_js);
     }
-}
-
-if (!shortcode_exists('rscat_categorylist')) {
-    add_shortcode('rscat_categorylist', 'rscat_categorylist_shortcode_handler');
 }
