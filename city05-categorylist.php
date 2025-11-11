@@ -441,6 +441,73 @@ CSS;
         echo '</ul>';
         echo '</div>';
 
+        // 添加 JavaScript 實現橫向滾動
+        static $city05_scroll_script_loaded = false;
+        if (!$city05_scroll_script_loaded) {
+            echo <<<'JAVASCRIPT'
+<script>
+(function() {
+    function initCategoryScroll() {
+        const containers = document.querySelectorAll('.city05-category-list-container');
+
+        containers.forEach(container => {
+            const list = container.querySelector('.city05-category-list');
+            if (!list) return;
+
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            // 滑鼠拖曳滾動
+            list.addEventListener('mousedown', (e) => {
+                // 如果點擊的是連結，不啟動拖曳
+                if (e.target.tagName === 'A' || e.target.closest('a')) {
+                    return;
+                }
+                isDown = true;
+                list.style.cursor = 'grabbing';
+                list.style.userSelect = 'none';
+                startX = e.pageX - list.offsetLeft;
+                scrollLeft = list.scrollLeft;
+            });
+
+            list.addEventListener('mouseleave', () => {
+                isDown = false;
+                list.style.cursor = 'grab';
+                list.style.userSelect = 'auto';
+            });
+
+            list.addEventListener('mouseup', () => {
+                isDown = false;
+                list.style.cursor = 'grab';
+                list.style.userSelect = 'auto';
+            });
+
+            list.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - list.offsetLeft;
+                const walk = (x - startX) * 2;
+                list.scrollLeft = scrollLeft - walk;
+            });
+
+            // 初始設置游標樣式
+            list.style.cursor = 'grab';
+        });
+    }
+
+    // DOM 載入完成後執行
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCategoryScroll);
+    } else {
+        initCategoryScroll();
+    }
+})();
+</script>
+JAVASCRIPT;
+            $city05_scroll_script_loaded = true;
+        }
+
         return ob_get_clean();
     }
 }
