@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>rsmeg 置入式輪播</title>
+
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+  <!-- rsmeg 置入式輪播樣式（範疇化，僅作用於 .rsmeg-root） -->
+  <style>
+    /* ============================
+       基礎重置與容器
+       ============================ */
+    .rsmeg-root {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .rsmeg-root *,
+    .rsmeg-root *::before,
+    .rsmeg-root *::after {
+      box-sizing: inherit;
+    }
+
+    .rsmeg-root .rsmeg-container {
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* ============================
+       輪播主體
+       ============================ */
+    .rsmeg-root .rsmeg-carousel {
+      position: relative;
+      width: 100%;
+    }
+
+    .rsmeg-root .rsmeg-swiper {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .rsmeg-root .rsmeg-wrapper {
+      display: flex;
+    }
+
+    /* ============================
+       卡片樣式
+       ============================ */
+    .rsmeg-root .rsmeg-slide {
+      position: relative;
+      width: 100%;
+      height: auto;
+      flex-shrink: 0;
+    }
+
+    .rsmeg-root .rsmeg-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 16px;
+      border: 2px solid #E83743;
+      object-fit: cover;
+      position: relative;
+    }
+
+    /* 漸層覆蓋效果 */
+    .rsmeg-root .rsmeg-slide::before {
+      content: '';
+      position: absolute;
+      inset: 2px; /* 配合邊框寬度 */
+      background: linear-gradient(
+        180deg,
+        rgba(57, 54, 49, 0) 0%,
+        rgba(57, 54, 49, 0.44) 38%,
+        rgba(57, 54, 49, 0.80) 100%
+      );
+      border-radius: 14px; /* 16px - 2px border */
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* 桌機左右卡片 overlay（僅 ≥1280px） */
+    .rsmeg-root .rsmeg-slide.rsmeg-is-adjacent::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 16px;
+      pointer-events: none;
+      z-index: 2;
+      transition: opacity 0.3s ease;
+    }
+
+    /* ============================
+       卡片尺寸 - 手機
+       ============================ */
+    @media (max-width: 767.98px) {
+      .rsmeg-root .rsmeg-img {
+        aspect-ratio: 322 / 181.12;
+        max-width: 322px;
+        margin: 0 auto;
+      }
+
+      .rsmeg-root .rsmeg-swiper {
+        overflow: visible; /* 允許邊緣預覽 */
+      }
+
+      /* 手機不顯示 overlay */
+      .rsmeg-root .rsmeg-slide.rsmeg-is-adjacent::after {
+        content: none;
+      }
+    }
+
+    /* ============================
+       卡片尺寸 - 平板
+       ============================ */
+    @media (min-width: 768px) and (max-width: 1279.98px) {
+      .rsmeg-root .rsmeg-img {
+        aspect-ratio: 380 / 213.75;
+        max-width: 380px;
+      }
+
+      /* 平板不顯示 overlay */
+      .rsmeg-root .rsmeg-slide.rsmeg-is-adjacent::after {
+        content: none;
+      }
+    }
+
+    /* ============================
+       卡片尺寸 - 桌機
+       ============================ */
+    @media (min-width: 1280px) {
+      .rsmeg-root .rsmeg-img {
+        aspect-ratio: 380 / 213.75;
+        max-width: 380px;
+      }
+    }
+
+    /* ============================
+       導航箭頭
+       ============================ */
+    .rsmeg-root .rsmeg-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      min-width: 40px;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.8;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      outline: none;
+    }
+
+    .rsmeg-root .rsmeg-nav:hover {
+      opacity: 1;
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .rsmeg-root .rsmeg-nav:focus {
+      opacity: 1;
+      outline: 2px solid rgba(232, 55, 67, 0.6);
+      outline-offset: 4px;
+    }
+
+    .rsmeg-root .rsmeg-nav:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+
+    .rsmeg-root .rsmeg-nav.swiper-button-disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .rsmeg-root .rsmeg-nav svg {
+      width: 34px;
+      height: 66px;
+      display: block;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+
+    /* 手機隱藏箭頭 */
+    @media (max-width: 767.98px) {
+      .rsmeg-root .rsmeg-nav {
+        display: none;
+      }
+    }
+
+    /* 平板箭頭位置 */
+    @media (min-width: 768px) and (max-width: 1279.98px) {
+      .rsmeg-root .rsmeg-prev {
+        left: -20px;
+      }
+
+      .rsmeg-root .rsmeg-next {
+        right: -20px;
+      }
+    }
+
+    /* 桌機箭頭位置（對齊中間卡片） */
+    @media (min-width: 1280px) {
+      .rsmeg-root .rsmeg-prev {
+        left: calc((100% - 380px) / 2 - 50px);
+      }
+
+      .rsmeg-root .rsmeg-next {
+        right: calc((100% - 380px) / 2 - 50px);
+      }
+    }
+
+    /* ============================
+       Swiper 覆寫（範疇化）
+       ============================ */
+    .rsmeg-root .swiper {
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+      overflow: hidden;
+      list-style: none;
+      padding: 0;
+      z-index: 1;
+    }
+
+    .rsmeg-root .swiper-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      display: flex;
+      transition-property: transform;
+      box-sizing: content-box;
+    }
+
+    .rsmeg-root .swiper-slide {
+      flex-shrink: 0;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transition-property: transform;
+    }
+
+    /* ============================
+       無障礙與互動
+       ============================ */
+    .rsmeg-root [role="region"] {
+      outline: none;
+    }
+
+    .rsmeg-root [role="region"]:focus-within {
+      /* 容器獲得焦點時的視覺提示 */
+    }
+
+    /* ============================
+       減少動畫偏好
+       ============================ */
+    @media (prefers-reduced-motion: reduce) {
+      .rsmeg-root .swiper-wrapper {
+        transition-duration: 0ms !important;
+      }
+
+      .rsmeg-root .rsmeg-nav {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================
+     rsmeg 置入式輪播模組
+     ============================ -->
+<div class="rsmeg-root" role="region" aria-label="rsmeg 置入式輪播">
+  <div class="rsmeg-container">
+    <div class="rsmeg-carousel">
+
+      <!-- 左箭頭 -->
+      <button class="rsmeg-nav rsmeg-prev" aria-label="上一張" type="button">
+        <svg width="34" height="66" viewBox="0 0 34 66" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <path d="M33.2339 64.3467L1.4141 32.5269L33.2339 0.707051" stroke="white" stroke-width="2"/>
+        </svg>
+      </button>
+
+      <!-- 右箭頭 -->
+      <button class="rsmeg-nav rsmeg-next" aria-label="下一張" type="button">
+        <svg width="34" height="66" viewBox="0 0 34 66" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <path d="M0.707134 0.707051L32.5269 32.5269L0.707134 64.3467" stroke="white" stroke-width="2"/>
+        </svg>
+      </button>
+
+      <!-- Swiper 容器 -->
+      <div class="rsmeg-swiper swiper" data-rsmeg-autoplay="true" data-rsmeg-delay="5000" data-rsmeg-loop="true">
+        <div class="rsmeg-wrapper swiper-wrapper">
+
+          <!-- 卡片 1 -->
+          <div class="rsmeg-slide swiper-slide">
+            <img class="rsmeg-img"
+                 alt="輪播圖片 1"
+                 src="https://placehold.co/380x214/E83743/FFFFFF?text=Slide+1"
+                 loading="lazy">
+          </div>
+
+          <!-- 卡片 2 -->
+          <div class="rsmeg-slide swiper-slide">
+            <img class="rsmeg-img"
+                 alt="輪播圖片 2"
+                 src="https://placehold.co/380x214/FF6B6B/FFFFFF?text=Slide+2"
+                 loading="lazy">
+          </div>
+
+          <!-- 卡片 3 -->
+          <div class="rsmeg-slide swiper-slide">
+            <img class="rsmeg-img"
+                 alt="輪播圖片 3"
+                 src="https://placehold.co/380x214/4ECDC4/FFFFFF?text=Slide+3"
+                 loading="lazy">
+          </div>
+
+          <!-- 卡片 4 -->
+          <div class="rsmeg-slide swiper-slide">
+            <img class="rsmeg-img"
+                 alt="輪播圖片 4"
+                 src="https://placehold.co/380x214/45B7D1/FFFFFF?text=Slide+4"
+                 loading="lazy">
+          </div>
+
+          <!-- 卡片 5 -->
+          <div class="rsmeg-slide swiper-slide">
+            <img class="rsmeg-img"
+                 alt="輪播圖片 5"
+                 src="https://placehold.co/380x214/96CEB4/FFFFFF?text=Slide+5"
+                 loading="lazy">
+          </div>
+
+          <!-- 卡片 6 -->
+          <div class="rsmeg-slide swiper-slide">
+            <img class="rsmeg-img"
+                 alt="輪播圖片 6"
+                 src="https://placehold.co/380x214/FFEAA7/333333?text=Slide+6"
+                 loading="lazy">
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<!-- rsmeg 輪播初始化腳本 -->
+<script>
+(function() {
+  'use strict';
+
+  // 取得輪播元素
+  const rootEl = document.querySelector('.rsmeg-root');
+  const swiperEl = rootEl.querySelector('.rsmeg-swiper');
+
+  // 讀取配置
+  const autoplayEnabled = swiperEl.getAttribute('data-rsmeg-autoplay') === 'true';
+  const autoplayDelay = parseInt(swiperEl.getAttribute('data-rsmeg-delay') || '5000', 10);
+  const loopEnabled = swiperEl.getAttribute('data-rsmeg-loop') === 'true';
+
+  // 偵測是否啟用減少動畫
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // 初始化 Swiper
+  const swiper = new Swiper('.rsmeg-root .rsmeg-swiper', {
+    // 核心配置
+    loop: loopEnabled && !prefersReducedMotion,
+    watchSlidesProgress: true,
+    centeredSlides: false,
+    speed: prefersReducedMotion ? 0 : 600,
+
+    // 自動播放
+    autoplay: (autoplayEnabled && !prefersReducedMotion) ? {
+      delay: autoplayDelay,
+      disableOnInteraction: false,
+      pauseOnMouseEnter: true
+    } : false,
+
+    // 導航
+    navigation: {
+      nextEl: '.rsmeg-root .rsmeg-next',
+      prevEl: '.rsmeg-root .rsmeg-prev'
+    },
+
+    // 響應式斷點
+    breakpoints: {
+      // 手機 (<768px)
+      0: {
+        slidesPerView: 1,
+        spaceBetween: 12,
+        centeredSlides: true
+      },
+      // 平板 (768-1279px)
+      768: {
+        slidesPerView: 2,
+        spaceBetween: 16,
+        centeredSlides: false
+      },
+      // 桌機 (≥1280px)
+      1280: {
+        slidesPerView: 3,
+        spaceBetween: 24,
+        centeredSlides: false
+      }
+    },
+
+    // 事件處理
+    on: {
+      init: function(swiperInstance) {
+        updateOverlay(swiperInstance);
+      },
+      slideChange: function(swiperInstance) {
+        updateOverlay(swiperInstance);
+      },
+      progress: function(swiperInstance) {
+        updateOverlay(swiperInstance);
+      },
+      resize: function(swiperInstance) {
+        updateOverlay(swiperInstance);
+      }
+    }
+  });
+
+  // 更新桌機 overlay 效果
+  function updateOverlay(swiperInstance) {
+    // 僅在桌機斷點 (≥1280px) 且非手機模式執行
+    if (window.innerWidth < 1280) {
+      // 非桌機：移除所有 overlay class
+      const allSlides = rootEl.querySelectorAll('.rsmeg-slide');
+      allSlides.forEach(slide => slide.classList.remove('rsmeg-is-adjacent'));
+      return;
+    }
+
+    // 桌機模式：計算相鄰卡片
+    const slides = swiperInstance.slides;
+    const realIndex = swiperInstance.realIndex;
+    const totalSlides = slides.length;
+
+    // 移除所有 adjacent class
+    slides.forEach(slide => slide.classList.remove('rsmeg-is-adjacent'));
+
+    // loop 模式下，需要使用 realIndex
+    if (loopEnabled) {
+      // 找到真實索引對應的 DOM 元素
+      slides.forEach((slide, idx) => {
+        const slideRealIndex = parseInt(slide.getAttribute('data-swiper-slide-index') || idx, 10);
+
+        // 計算前後相鄰索引（考慮循環）
+        const prevIndex = (realIndex - 1 + totalSlides) % totalSlides;
+        const nextIndex = (realIndex + 1) % totalSlides;
+
+        if (slideRealIndex === prevIndex || slideRealIndex === nextIndex) {
+          slide.classList.add('rsmeg-is-adjacent');
+        }
+      });
+    } else {
+      // 非 loop 模式
+      const activeIndex = swiperInstance.activeIndex;
+      if (activeIndex > 0 && slides[activeIndex - 1]) {
+        slides[activeIndex - 1].classList.add('rsmeg-is-adjacent');
+      }
+      if (activeIndex < slides.length - 1 && slides[activeIndex + 1]) {
+        slides[activeIndex + 1].classList.add('rsmeg-is-adjacent');
+      }
+    }
+  }
+
+  // 互動暫停邏輯
+  let resumeTimer = null;
+
+  // 滑鼠懸停暫停（桌機）
+  rootEl.addEventListener('mouseenter', function() {
+    if (swiper.autoplay && swiper.autoplay.running) {
+      clearTimeout(resumeTimer);
+      swiper.autoplay.stop();
+    }
+  });
+
+  rootEl.addEventListener('mouseleave', function() {
+    if (swiper.autoplay && !swiper.autoplay.running && autoplayEnabled && !prefersReducedMotion) {
+      resumeTimer = setTimeout(() => {
+        swiper.autoplay.start();
+      }, 2000);
+    }
+  });
+
+  // 鍵盤焦點暫停
+  rootEl.addEventListener('focusin', function() {
+    if (swiper.autoplay && swiper.autoplay.running) {
+      clearTimeout(resumeTimer);
+      swiper.autoplay.stop();
+    }
+  });
+
+  rootEl.addEventListener('focusout', function() {
+    if (swiper.autoplay && !swiper.autoplay.running && autoplayEnabled && !prefersReducedMotion) {
+      resumeTimer = setTimeout(() => {
+        swiper.autoplay.start();
+      }, 2000);
+    }
+  });
+
+  // 觸控暫停（手機/平板）
+  swiperEl.addEventListener('touchstart', function() {
+    if (swiper.autoplay && swiper.autoplay.running) {
+      clearTimeout(resumeTimer);
+      swiper.autoplay.stop();
+    }
+  });
+
+  swiperEl.addEventListener('touchend', function() {
+    if (swiper.autoplay && !swiper.autoplay.running && autoplayEnabled && !prefersReducedMotion) {
+      resumeTimer = setTimeout(() => {
+        swiper.autoplay.start();
+      }, 2000);
+    }
+  });
+
+  // 清理
+  window.addEventListener('beforeunload', function() {
+    if (resumeTimer) {
+      clearTimeout(resumeTimer);
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>
