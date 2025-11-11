@@ -142,8 +142,7 @@
 
     .rsmeg-root .rsmeg-nav:focus {
       opacity: 1;
-      outline: 2px solid rgba(232, 55, 67, 0.6);
-      outline-offset: 4px;
+      outline: none;
     }
 
     .rsmeg-root .rsmeg-nav:active {
@@ -159,7 +158,6 @@
       width: 34px;
       height: 66px;
       display: block;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
     }
 
     /* 手機隱藏箭頭 */
@@ -417,20 +415,15 @@
     // 移除所有 adjacent class
     slides.forEach(slide => slide.classList.remove('rsmeg-is-adjacent'));
 
-    // 只在桌機模式（≥1280px）加 overlay 到左右相鄰卡片
+    // 只在桌機模式（≥1280px）加 overlay
     if (window.innerWidth >= 1280) {
-      const prevIndex = activeIndex - 1;
-      const nextIndex = activeIndex + 1;
-
-      // 左邊相鄰卡片
-      if (prevIndex >= 0 && slides[prevIndex]) {
-        slides[prevIndex].classList.add('rsmeg-is-adjacent');
-      }
-
-      // 右邊相鄰卡片
-      if (nextIndex < slides.length && slides[nextIndex]) {
-        slides[nextIndex].classList.add('rsmeg-is-adjacent');
-      }
+      // 給所有可見的 slides 加 class，但排除 active
+      slides.forEach((slide, idx) => {
+        // 檢查是否為可見的卡片，且不是 active
+        if (slide.classList.contains('swiper-slide-visible') && idx !== activeIndex) {
+          slide.classList.add('rsmeg-is-adjacent');
+        }
+      });
     }
     // 平板和手機：不做任何操作（不加 overlay class）
   }
