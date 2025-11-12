@@ -10,7 +10,7 @@
  * [rs-search root="123" orderby="name" order="ASC" show_count="true"]
  *
  * @package RS_Search
- * @version 1.0.0
+ * @version 1.0.1
  */
 
 // 防止直接訪問
@@ -31,7 +31,7 @@ class RS_Search_Shortcode {
     /**
      * 版本號
      */
-    const VERSION = '1.0.0';
+    const VERSION = '1.0.1';
 
     /**
      * Taxonomy 名稱
@@ -147,7 +147,7 @@ class RS_Search_Shortcode {
         $level1_args = array(
             'taxonomy'   => self::TAXONOMY,
             'parent'     => absint( $args['root'] ),
-            'hide_empty' => true,
+            'hide_empty' => false,
             'orderby'    => sanitize_key( $args['orderby'] ),
             'order'      => strtoupper( $args['order'] ) === 'DESC' ? 'DESC' : 'ASC',
         );
@@ -246,7 +246,7 @@ class RS_Search_Shortcode {
         $children = get_terms( array(
             'taxonomy'   => $taxonomy,
             'parent'     => $parent_id,
-            'hide_empty' => true,
+            'hide_empty' => false,
             'orderby'    => 'name',
             'order'      => 'ASC',
         ) );
