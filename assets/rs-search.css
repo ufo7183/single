@@ -1,0 +1,329 @@
+/**
+ * RS Search - 樣式表
+ *
+ * 遵循 BEM 命名規範
+ * 字型：Noto Sans TC
+ *
+ * @version 1.0.0
+ */
+
+/* ==========================================================================
+   容器
+   ========================================================================== */
+
+.rs-search {
+    width: 100%;
+    max-width: 100%;
+    font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+.rs-search *,
+.rs-search *::before,
+.rs-search *::after {
+    box-sizing: inherit;
+}
+
+/* ==========================================================================
+   第一層分類容器
+   ========================================================================== */
+
+.rs-search__level1 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+/* ==========================================================================
+   第一層分類按鈕（Normal 狀態）
+   ========================================================================== */
+
+.rs-search__l1-tag {
+    display: inline-flex;
+    padding: 6px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.rs-search__l1-text {
+    color: #333;
+    text-align: center;
+    font-feature-settings: 'case' on;
+    font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 160%;
+    letter-spacing: 1.8px;
+}
+
+/* ==========================================================================
+   第一層分類按鈕（Hover + Active 狀態）
+   ========================================================================== */
+
+.rs-search__l1-tag:hover,
+.rs-search__l1-tag:focus,
+.rs-search__l1-tag.is-active {
+    border-radius: 20.5px;
+    background: #E83743;
+}
+
+.rs-search__l1-tag:hover .rs-search__l1-text,
+.rs-search__l1-tag:focus .rs-search__l1-text,
+.rs-search__l1-tag.is-active .rs-search__l1-text {
+    color: #FFF;
+}
+
+/* 鍵盤焦點樣式 */
+.rs-search__l1-tag:focus-visible {
+    outline: 2px solid #E83743;
+    outline-offset: 2px;
+}
+
+/* ==========================================================================
+   第二層分類容器
+   ========================================================================== */
+
+.rs-search__level2 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-height: 40px;
+    align-items: center;
+}
+
+/* 載入狀態 */
+.rs-search__level2.rs-search__l2--loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.rs-search__level2.rs-search__l2--loading::after {
+    content: "載入中...";
+    display: block;
+    width: 100%;
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    font-family: "Noto Sans TC", sans-serif;
+}
+
+/* ==========================================================================
+   第二層分類標籤（Normal 狀態）
+   ========================================================================== */
+
+.rs-search__l2-tag {
+    display: flex;
+    padding: 4px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 18.5px;
+    border: 1px solid #D9D9D9;
+    text-decoration: none;
+    background: transparent;
+    transition: all 0.2s ease;
+    min-height: 40px;
+}
+
+.rs-search__l2-text {
+    color: #88888C;
+    text-align: center;
+    font-feature-settings: 'case' on;
+    font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 160%;
+    letter-spacing: 1.8px;
+}
+
+/* ==========================================================================
+   第二層分類標籤（Hover + Active 狀態）
+   ========================================================================== */
+
+.rs-search__l2-tag:hover,
+.rs-search__l2-tag:focus,
+.rs-search__l2-tag.is-active {
+    background: #E83743;
+    border-color: #E83743;
+    text-decoration: none;
+}
+
+.rs-search__l2-tag:hover .rs-search__l2-text,
+.rs-search__l2-tag:focus .rs-search__l2-text,
+.rs-search__l2-tag.is-active .rs-search__l2-text {
+    color: #FFF;
+}
+
+/* 焦點樣式 */
+.rs-search__l2-tag:focus-visible {
+    outline: 2px solid #E83743;
+    outline-offset: 2px;
+}
+
+/* ==========================================================================
+   訊息狀態（空、錯誤）
+   ========================================================================== */
+
+.rs-search__empty,
+.rs-search__error {
+    font-size: 14px;
+    margin-top: 8px;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-family: "Noto Sans TC", sans-serif;
+    width: 100%;
+    text-align: center;
+}
+
+.rs-search__empty {
+    color: #666;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+}
+
+.rs-search__error {
+    color: #d32f2f;
+    background: #ffebee;
+    border: 1px solid #ef5350;
+}
+
+/* ==========================================================================
+   響應式設計
+   ========================================================================== */
+
+/* 平板 */
+@media (max-width: 768px) {
+    .rs-search__l1-text,
+    .rs-search__l2-text {
+        font-size: 16px;
+        letter-spacing: 1.6px;
+    }
+
+    .rs-search__l1-tag {
+        padding: 5px 14px;
+    }
+
+    .rs-search__l2-tag {
+        padding: 3px 14px;
+    }
+}
+
+/* 手機 */
+@media (max-width: 480px) {
+    .rs-search__level1,
+    .rs-search__level2 {
+        gap: 8px;
+    }
+
+    .rs-search__l1-text,
+    .rs-search__l2-text {
+        font-size: 15px;
+        letter-spacing: 1.5px;
+    }
+
+    .rs-search__l1-tag {
+        padding: 4px 12px;
+    }
+
+    .rs-search__l2-tag {
+        padding: 3px 12px;
+        min-height: 36px;
+    }
+
+    .rs-search__empty,
+    .rs-search__error {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+}
+
+/* ==========================================================================
+   無障礙與列印
+   ========================================================================== */
+
+/* 高對比模式 */
+@media (prefers-contrast: high) {
+    .rs-search__l1-tag,
+    .rs-search__l2-tag {
+        border: 2px solid currentColor;
+    }
+}
+
+/* 減少動畫 */
+@media (prefers-reduced-motion: reduce) {
+    .rs-search__l1-tag,
+    .rs-search__l2-tag {
+        transition: none;
+    }
+}
+
+/* 列印樣式 */
+@media print {
+    .rs-search {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   觸控裝置優化
+   ========================================================================== */
+
+/* 確保觸控目標大小 ≥ 40px */
+@media (pointer: coarse) {
+    .rs-search__l1-tag,
+    .rs-search__l2-tag {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* ==========================================================================
+   RTL 語言支援（可選）
+   ========================================================================== */
+
+[dir="rtl"] .rs-search__level1,
+[dir="rtl"] .rs-search__level2 {
+    direction: rtl;
+}
+
+/* ==========================================================================
+   深色模式支援（可選）
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+    .rs-search__l1-text {
+        color: #e0e0e0;
+    }
+
+    .rs-search__l2-tag {
+        border-color: #555;
+    }
+
+    .rs-search__l2-text {
+        color: #aaa;
+    }
+
+    .rs-search__empty {
+        color: #aaa;
+        background: #2a2a2a;
+        border-color: #444;
+    }
+
+    .rs-search__error {
+        color: #ef5350;
+        background: #3a1f1f;
+        border-color: #d32f2f;
+    }
+}
