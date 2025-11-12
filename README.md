@@ -229,7 +229,7 @@ rs-search/
 
 ## 📁 檔案結構
 
-### v1.0.3+ 內嵌版本（推薦）
+### v1.0.4+ 內嵌版本（推薦）
 
 ```
 rs-search/
@@ -263,7 +263,7 @@ rs-search/
 └── README.md                     # 說明文件
 ```
 
-**⚠️ 注意**：v1.0.0 和 v1.0.1 版本需要 assets 資料夾，在 Code Snippets 中會有路徑問題，建議升級至 v1.0.3+。
+**⚠️ 注意**：v1.0.0 和 v1.0.1 版本需要 assets 資料夾，在 Code Snippets 中會有路徑問題，建議升級至 v1.0.4+。
 
 ---
 
@@ -276,6 +276,7 @@ rs-search/
 - **Hook**: `init`, `wp_ajax_*`（v1.0.2+ 移除了 `wp_enqueue_scripts`）
 - **資源載入**: 內嵌 CSS 與 JavaScript（無需外部檔案）
 - **CSS 優先級**: v1.0.3+ 所有屬性使用 `!important`（防止主題覆蓋）
+- **Post Type 綁定**: v1.0.4+ 綁定 `treatment` post type（只顯示相關分類）
 - **安全性**: Nonce 驗證、資料清理、輸出轉義
 
 ### JavaScript 架構
@@ -564,6 +565,27 @@ var_dump(wp_verify_nonce($_POST['nonce'], 'rs-search'));
 
 ## 📝 版本歷史
 
+### v1.0.4 (2025-01-12)
+
+**樣式修正與 Post Type 綁定**
+
+🐛 **問題修正**
+- 修正第一層分類之間沒有間距的問題（加入 margin: 5px）
+- 修正文字顏色為 #292929（原為 #333）
+- 移除空分類時的「尚無第二層分類」提示訊息（改為留空）
+
+🔧 **功能變更**
+- 綁定 `treatment` post type：只顯示有關聯到 treatment 文章的分類
+- 第一層和第二層查詢都會過濾只屬於 treatment post type 的 terms
+- 使用 `object_ids` 參數確保分類關聯正確性
+
+💡 **視覺改進**
+- 第一層分類按鈕間距更明確（margin: 5px）
+- 文字顏色更精確（#292929）
+- 無子分類時介面更簡潔（不顯示提示）
+
+---
+
 ### v1.0.3 (2025-01-12)
 
 **修正 CSS 優先級問題**
@@ -701,4 +723,4 @@ SOFTWARE.
 
 **製作**: RS Search Team
 **最後更新**: 2025-01-12
-**版本**: 1.0.3
+**版本**: 1.0.4

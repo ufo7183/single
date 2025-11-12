@@ -10,7 +10,7 @@
  * [rs-search root="123" orderby="name" order="ASC" show_count="true"]
  *
  * @package RS_Search
- * @version 1.0.3
+ * @version 1.0.4
  */
 
 // 防止直接訪問
@@ -31,7 +31,7 @@ class RS_Search_Shortcode {
     /**
      * 版本號
      */
-    const VERSION = '1.0.3';
+    const VERSION = '1.0.4';
 
     /**
      * Taxonomy 名稱
@@ -112,6 +112,14 @@ class RS_Search_Shortcode {
         $include = $this->parse_comma_separated( $args['include'] );
         $exclude = $this->parse_comma_separated( $args['exclude'] );
 
+        // 取得 treatment post type 的所有文章 ID（用於過濾 terms）
+        $treatment_posts = get_posts( array(
+            'post_type'   => 'treatment',
+            'post_status' => 'publish',
+            'numberposts' => -1,
+            'fields'      => 'ids',
+        ) );
+
         // 查詢第一層分類
         $level1_args = array(
             'taxonomy'   => self::TAXONOMY,
@@ -120,6 +128,11 @@ class RS_Search_Shortcode {
             'orderby'    => sanitize_key( $args['orderby'] ),
             'order'      => strtoupper( $args['order'] ) === 'DESC' ? 'DESC' : 'ASC',
         );
+
+        // 只顯示有關聯到 treatment post type 的 terms
+        if ( ! empty( $treatment_posts ) ) {
+            $level1_args['object_ids'] = $treatment_posts;
+        }
 
         if ( ! empty( $include ) ) {
             $level1_args['include'] = $include;
@@ -199,12 +212,12 @@ class RS_Search_Shortcode {
      */
     private function get_inline_styles() {
         return '<style type="text/css">
-/* RS Search - 階層式自定義分類快篩 v1.0.3 */
+/* RS Search - 階層式自定義分類快篩 v1.0.4 */
 .rs-search{width:100%!important;max-width:100%!important;font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif!important;box-sizing:border-box!important}
 .rs-search *,.rs-search *::before,.rs-search *::after{box-sizing:inherit!important}
 .rs-search__level1{display:flex!important;flex-wrap:wrap!important;gap:10px!important;margin-bottom:20px!important;align-items:center!important}
-.rs-search__l1-tag{display:inline-flex!important;padding:6px 16px!important;justify-content:center!important;align-items:center!important;gap:10px!important;background:transparent!important;border:none!important;border-radius:0!important;cursor:pointer!important;transition:all 0.2s ease!important;outline:none!important}
-.rs-search__l1-text{color:#333!important;text-align:center!important;font-feature-settings:"case" on!important;font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important;font-size:18px!important;font-style:normal!important;font-weight:500!important;line-height:160%!important;letter-spacing:1.8px!important}
+.rs-search__l1-tag{display:inline-flex!important;padding:6px 16px!important;justify-content:center!important;align-items:center!important;gap:10px!important;background:transparent!important;border:none!important;border-radius:0!important;cursor:pointer!important;transition:all 0.2s ease!important;outline:none!important;margin:5px!important}
+.rs-search__l1-text{color:#292929!important;text-align:center!important;font-feature-settings:"case" on!important;font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important;font-size:18px!important;font-style:normal!important;font-weight:500!important;line-height:160%!important;letter-spacing:1.8px!important}
 .rs-search__l1-tag:hover,.rs-search__l1-tag:focus,.rs-search__l1-tag.is-active{border-radius:20.5px!important;background:#E83743!important}
 .rs-search__l1-tag:hover .rs-search__l1-text,.rs-search__l1-tag:focus .rs-search__l1-text,.rs-search__l1-tag.is-active .rs-search__l1-text{color:#FFF!important}
 .rs-search__l1-tag:focus-visible{outline:2px solid #E83743!important;outline-offset:2px!important}
@@ -294,7 +307,7 @@ fetch(config.ajax_url,{method:"POST",headers:{"Content-Type":"application/x-www-
 .then(function(response){if(!response.ok){throw new Error("HTTP error! status: "+response.status)}return response.json()})
 .then(function(data){
 if(!data.ok){showMessage(data.message||"載入失敗","error");return}
-if(!data.children||data.children.length===0){showMessage("尚無第二層分類","empty");return}
+if(!data.children||data.children.length===0){level2Container.innerHTML="";return}
 renderLevel2(data.children)
 })
 .catch(function(error){console.error("RS Search AJAX Error:",error);showMessage("載入失敗，請重試","error")})
@@ -355,14 +368,29 @@ else if(e.key==="ArrowRight"){e.preventDefault();var nextButton=buttons[index+1]
             }
         }
 
+        // 取得 treatment post type 的所有文章 ID（用於過濾 terms）
+        $treatment_posts = get_posts( array(
+            'post_type'   => 'treatment',
+            'post_status' => 'publish',
+            'numberposts' => -1,
+            'fields'      => 'ids',
+        ) );
+
         // 查詢子分類
-        $children = get_terms( array(
+        $children_args = array(
             'taxonomy'   => $taxonomy,
             'parent'     => $parent_id,
             'hide_empty' => false,
             'orderby'    => 'name',
             'order'      => 'ASC',
-        ) );
+        );
+
+        // 只顯示有關聯到 treatment post type 的 terms
+        if ( ! empty( $treatment_posts ) ) {
+            $children_args['object_ids'] = $treatment_posts;
+        }
+
+        $children = get_terms( $children_args );
 
         // 檢查錯誤
         if ( is_wp_error( $children ) ) {
