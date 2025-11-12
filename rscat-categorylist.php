@@ -469,11 +469,6 @@ if (!function_exists('rscat_categorylist_shortcode_handler')) {
         echo '</ul>';
         echo '</div>';
 
-        // 在前端載入拖拉腳本（只會掛一次）
-        if (!is_admin()) {
-            rscat_categorylist_enqueue_script();
-        }
-
         return ob_get_clean();
     }
 }
@@ -482,18 +477,20 @@ if (!shortcode_exists('rscat_categorylist')) {
     add_shortcode('rscat_categorylist', 'rscat_categorylist_shortcode_handler');
 }
 
-// 只負責把前端拖拉腳本掛進頁面（footer），避免在 shortcode 內輸出 <script>
-if (!function_exists('rscat_categorylist_enqueue_script')) {
-    function rscat_categorylist_enqueue_script() {
-        static $enqueued = false;
-        if ($enqueued) return; // 僅注入一次
-        $enqueued = true;
+// 前端統一掛載拖拉腳本（footer），避免在 shortcode 生命週期中再決定是否輸出
+add_action('wp_enqueue_scripts', function () {
+    if (is_admin()) return; // 後台不需要
 
-        // 建立一個空的 handle，再把 JS 以 inline 方式掛上去
-        wp_register_script('rscat-categorylist', false, array(), '1.0', true);
-        wp_enqueue_script('rscat-categorylist');
+    // 僅注入一次
+    static $done = false;
+    if ($done) return;
+    $done = true;
 
-        $drag_js = <<<JS
+    // 建立一個 handle，並把 JS 以 inline 方式掛上去（無外部檔案）
+    wp_register_script('rscat-categorylist', '', array(), '1.0', true);
+    wp_enqueue_script('rscat-categorylist');
+
+    $drag_js = <<<JS
 (function() {
     function initRscatCategoryScroll() {
         const containers = document.querySelectorAll('.rscat-category-list-container');
@@ -532,7 +529,6 @@ if (!function_exists('rscat_categorylist_enqueue_script')) {
                 list.scrollLeft = scrollLeft - walk;
             });
 
-            // 只有真的拖動過才阻止點擊
             list.addEventListener('click', (e) => {
                 if (hasMoved) {
                     e.preventDefault();
@@ -551,6 +547,5 @@ if (!function_exists('rscat_categorylist_enqueue_script')) {
 })();
 JS;
 
-        wp_add_inline_script('rscat-categorylist', $drag_js);
-    }
-}
+    wp_add_inline_script('rscat-categorylist', $drag_js);
+});
