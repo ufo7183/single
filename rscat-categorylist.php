@@ -387,7 +387,12 @@ if (!function_exists('rscat_categorylist_shortcode_handler')) {
             $rscat_categorylist_styles_loaded = true;
         }
 
-        echo '<div class="rscat-category-list-container">';
+        // Debug: 標記 shortcode 開始輸出
+        echo '<!-- [RSCAT DEBUG] Shortcode output start -->';
+        echo '<!-- [RSCAT DEBUG] Post type: ' . esc_html($post_type) . ' -->';
+        echo '<!-- [RSCAT DEBUG] Taxonomy: ' . esc_html($taxonomy) . ' -->';
+        echo '<!-- [RSCAT DEBUG] Terms count: ' . count($terms) . ' -->';
+        echo '<div class="rscat-category-list-container" data-rscat-debug="loaded">';
         echo '<ul class="rscat-category-list">';
 
         // 添加「全部」按鈕
@@ -468,6 +473,7 @@ if (!function_exists('rscat_categorylist_shortcode_handler')) {
 
         echo '</ul>';
         echo '</div>';
+        echo '<!-- [RSCAT DEBUG] Shortcode output end -->';
 
         return ob_get_clean();
     }
@@ -486,17 +492,39 @@ add_action('wp_enqueue_scripts', function () {
     if ($done) return;
     $done = true;
 
+    // Debug log
+    error_log('[RSCAT] wp_enqueue_scripts hook fired, registering script');
+
     // 建立一個 handle，並把 JS 以 inline 方式掛上去（無外部檔案）
     wp_register_script('rscat-categorylist', '', array(), '1.0', true);
     wp_enqueue_script('rscat-categorylist');
 
     $drag_js = <<<JS
 (function() {
+    console.log('[RSCAT] Script loaded and executing');
+
     function initRscatCategoryScroll() {
+        console.log('[RSCAT] initRscatCategoryScroll called');
+        console.log('[RSCAT] readyState:', document.readyState);
+
         const containers = document.querySelectorAll('.rscat-category-list-container');
-        containers.forEach(container => {
+        console.log('[RSCAT] Found containers:', containers.length);
+
+        if (containers.length === 0) {
+            console.warn('[RSCAT] No .rscat-category-list-container found on page');
+            return;
+        }
+
+        containers.forEach((container, index) => {
+            console.log('[RSCAT] Processing container', index + 1);
             const list = container.querySelector('.rscat-category-list');
-            if (!list) return;
+
+            if (!list) {
+                console.warn('[RSCAT] Container', index + 1, 'has no .rscat-category-list');
+                return;
+            }
+
+            console.log('[RSCAT] Found list in container', index + 1, list);
 
             let isDown = false;
             let startX;
@@ -504,6 +532,7 @@ add_action('wp_enqueue_scripts', function () {
             let hasMoved = false;
 
             list.addEventListener('mousedown', (e) => {
+                console.log('[RSCAT] mousedown event');
                 isDown = true;
                 hasMoved = false;
                 list.style.cursor = 'grabbing';
@@ -514,6 +543,7 @@ add_action('wp_enqueue_scripts', function () {
 
             ['mouseleave','mouseup'].forEach(evt => {
                 list.addEventListener(evt, () => {
+                    console.log('[RSCAT]', evt, 'event');
                     isDown = false;
                     list.style.cursor = 'grab';
                     list.style.userSelect = '';
@@ -530,18 +560,26 @@ add_action('wp_enqueue_scripts', function () {
             });
 
             list.addEventListener('click', (e) => {
+                console.log('[RSCAT] click event, hasMoved:', hasMoved);
                 if (hasMoved) {
+                    console.log('[RSCAT] Preventing click navigation');
                     e.preventDefault();
                     e.stopPropagation();
                 }
             }, true);
 
             list.style.cursor = 'grab';
+            console.log('[RSCAT] Events bound and cursor set for container', index + 1);
         });
+
+        console.log('[RSCAT] All containers initialized');
     }
+
     if (document.readyState === 'loading') {
+        console.log('[RSCAT] Waiting for DOMContentLoaded');
         document.addEventListener('DOMContentLoaded', initRscatCategoryScroll);
     } else {
+        console.log('[RSCAT] DOM already loaded, initializing now');
         initRscatCategoryScroll();
     }
 })();

@@ -346,7 +346,12 @@ CSS;
             $city05_categorylist_styles_loaded = true;
         }
 
-        echo '<div class="city05-category-list-container">';
+        // Debug: 標記 shortcode 開始輸出
+        echo '<!-- [CITY05 DEBUG] Shortcode output start -->';
+        echo '<!-- [CITY05 DEBUG] Post type: ' . esc_html($post_type) . ' -->';
+        echo '<!-- [CITY05 DEBUG] Taxonomy: ' . esc_html($taxonomy) . ' -->';
+        echo '<!-- [CITY05 DEBUG] Terms count: ' . count($terms) . ' -->';
+        echo '<div class="city05-category-list-container" data-city05-debug="loaded">';
         echo '<ul class="city05-category-list">';
 
         // 添加「全部」按鈕
@@ -439,6 +444,7 @@ CSS;
 
         echo '</ul>';
         echo '</div>';
+        echo '<!-- [CITY05 DEBUG] Shortcode output end -->';
 
         return ob_get_clean();
     }
@@ -457,17 +463,39 @@ add_action('wp_enqueue_scripts', function () {
     if ($done) return;
     $done = true;
 
+    // Debug log
+    error_log('[CITY05] wp_enqueue_scripts hook fired, registering script');
+
     // 建立一個 handle，並把 JS 以 inline 方式掛上去（無外部檔案）
     wp_register_script('city05-categorylist', '', array(), '1.0', true);
     wp_enqueue_script('city05-categorylist');
 
     $drag_js = <<<JS
 (function() {
+    console.log('[CITY05] Script loaded and executing');
+
     function initCategoryScroll() {
+        console.log('[CITY05] initCategoryScroll called');
+        console.log('[CITY05] readyState:', document.readyState);
+
         const containers = document.querySelectorAll('.city05-category-list-container');
-        containers.forEach(container => {
+        console.log('[CITY05] Found containers:', containers.length);
+
+        if (containers.length === 0) {
+            console.warn('[CITY05] No .city05-category-list-container found on page');
+            return;
+        }
+
+        containers.forEach((container, index) => {
+            console.log('[CITY05] Processing container', index + 1);
             const list = container.querySelector('.city05-category-list');
-            if (!list) return;
+
+            if (!list) {
+                console.warn('[CITY05] Container', index + 1, 'has no .city05-category-list');
+                return;
+            }
+
+            console.log('[CITY05] Found list in container', index + 1, list);
 
             let isDown = false;
             let startX;
@@ -475,6 +503,7 @@ add_action('wp_enqueue_scripts', function () {
             let hasMoved = false;
 
             list.addEventListener('mousedown', (e) => {
+                console.log('[CITY05] mousedown event');
                 isDown = true;
                 hasMoved = false;
                 list.style.cursor = 'grabbing';
@@ -485,6 +514,7 @@ add_action('wp_enqueue_scripts', function () {
 
             ['mouseleave','mouseup'].forEach(evt => {
                 list.addEventListener(evt, () => {
+                    console.log('[CITY05]', evt, 'event');
                     isDown = false;
                     list.style.cursor = 'grab';
                     list.style.userSelect = '';
@@ -501,18 +531,26 @@ add_action('wp_enqueue_scripts', function () {
             });
 
             list.addEventListener('click', (e) => {
+                console.log('[CITY05] click event, hasMoved:', hasMoved);
                 if (hasMoved) {
+                    console.log('[CITY05] Preventing click navigation');
                     e.preventDefault();
                     e.stopPropagation();
                 }
             }, true);
 
             list.style.cursor = 'grab';
+            console.log('[CITY05] Events bound and cursor set for container', index + 1);
         });
+
+        console.log('[CITY05] All containers initialized');
     }
+
     if (document.readyState === 'loading') {
+        console.log('[CITY05] Waiting for DOMContentLoaded');
         document.addEventListener('DOMContentLoaded', initCategoryScroll);
     } else {
+        console.log('[CITY05] DOM already loaded, initializing now');
         initCategoryScroll();
     }
 })();
