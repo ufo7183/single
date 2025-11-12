@@ -10,7 +10,7 @@
  * [rs-search root="123" orderby="name" order="ASC" show_count="true"]
  *
  * @package RS_Search
- * @version 1.0.2
+ * @version 1.0.3
  */
 
 // 防止直接訪問
@@ -31,7 +31,7 @@ class RS_Search_Shortcode {
     /**
      * 版本號
      */
-    const VERSION = '1.0.2';
+    const VERSION = '1.0.3';
 
     /**
      * Taxonomy 名稱
@@ -199,34 +199,34 @@ class RS_Search_Shortcode {
      */
     private function get_inline_styles() {
         return '<style type="text/css">
-/* RS Search - 階層式自定義分類快篩 */
-.rs-search{width:100%;max-width:100%;font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;box-sizing:border-box}
-.rs-search *,.rs-search *::before,.rs-search *::after{box-sizing:inherit}
-.rs-search__level1{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;align-items:center}
-.rs-search__l1-tag{display:inline-flex;padding:6px 16px;justify-content:center;align-items:center;gap:10px;background:transparent;border:none;border-radius:0;cursor:pointer;transition:all 0.2s ease;outline:none}
-.rs-search__l1-text{color:#333;text-align:center;font-feature-settings:"case" on;font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:18px;font-style:normal;font-weight:500;line-height:160%;letter-spacing:1.8px}
-.rs-search__l1-tag:hover,.rs-search__l1-tag:focus,.rs-search__l1-tag.is-active{border-radius:20.5px;background:#E83743}
-.rs-search__l1-tag:hover .rs-search__l1-text,.rs-search__l1-tag:focus .rs-search__l1-text,.rs-search__l1-tag.is-active .rs-search__l1-text{color:#FFF}
-.rs-search__l1-tag:focus-visible{outline:2px solid #E83743;outline-offset:2px}
-.rs-search__level2{display:flex;flex-wrap:wrap;gap:10px;min-height:40px;align-items:center}
-.rs-search__level2.rs-search__l2--loading{opacity:0.6;pointer-events:none;position:relative}
-.rs-search__level2.rs-search__l2--loading::after{content:"載入中...";display:block;width:100%;text-align:center;color:#666;font-size:14px;font-family:"Noto Sans TC",sans-serif}
-.rs-search__l2-tag{display:flex;padding:4px 16px;justify-content:center;align-items:center;gap:10px;border-radius:18.5px;border:1px solid #D9D9D9;text-decoration:none;background:transparent;transition:all 0.2s ease;min-height:40px}
-.rs-search__l2-text{color:#88888C;text-align:center;font-feature-settings:"case" on;font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:18px;font-style:normal;font-weight:500;line-height:160%;letter-spacing:1.8px}
-.rs-search__l2-tag:hover,.rs-search__l2-tag:focus,.rs-search__l2-tag.is-active{background:#E83743;border-color:#E83743;text-decoration:none}
-.rs-search__l2-tag:hover .rs-search__l2-text,.rs-search__l2-tag:focus .rs-search__l2-text,.rs-search__l2-tag.is-active .rs-search__l2-text{color:#FFF}
-.rs-search__l2-tag:focus-visible{outline:2px solid #E83743;outline-offset:2px}
-.rs-search__empty,.rs-search__error{font-size:14px;margin-top:8px;padding:10px 15px;border-radius:4px;font-family:"Noto Sans TC",sans-serif;width:100%;text-align:center}
-.rs-search__empty{color:#666;background:#f5f5f5;border:1px solid #ddd}
-.rs-search__error{color:#d32f2f;background:#ffebee;border:1px solid #ef5350}
-@media (max-width:768px){.rs-search__l1-text,.rs-search__l2-text{font-size:16px;letter-spacing:1.6px}.rs-search__l1-tag{padding:5px 14px}.rs-search__l2-tag{padding:3px 14px}}
-@media (max-width:480px){.rs-search__level1,.rs-search__level2{gap:8px}.rs-search__l1-text,.rs-search__l2-text{font-size:15px;letter-spacing:1.5px}.rs-search__l1-tag{padding:4px 12px}.rs-search__l2-tag{padding:3px 12px;min-height:36px}.rs-search__empty,.rs-search__error{font-size:13px;padding:8px 12px}}
-@media (prefers-contrast:high){.rs-search__l1-tag,.rs-search__l2-tag{border:2px solid currentColor}}
-@media (prefers-reduced-motion:reduce){.rs-search__l1-tag,.rs-search__l2-tag{transition:none}}
-@media print{.rs-search{display:none}}
-@media (pointer:coarse){.rs-search__l1-tag,.rs-search__l2-tag{min-height:44px;min-width:44px}}
-[dir="rtl"] .rs-search__level1,[dir="rtl"] .rs-search__level2{direction:rtl}
-@media (prefers-color-scheme:dark){.rs-search__l1-text{color:#e0e0e0}.rs-search__l2-tag{border-color:#555}.rs-search__l2-text{color:#aaa}.rs-search__empty{color:#aaa;background:#2a2a2a;border-color:#444}.rs-search__error{color:#ef5350;background:#3a1f1f;border-color:#d32f2f}}
+/* RS Search - 階層式自定義分類快篩 v1.0.3 */
+.rs-search{width:100%!important;max-width:100%!important;font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif!important;box-sizing:border-box!important}
+.rs-search *,.rs-search *::before,.rs-search *::after{box-sizing:inherit!important}
+.rs-search__level1{display:flex!important;flex-wrap:wrap!important;gap:10px!important;margin-bottom:20px!important;align-items:center!important}
+.rs-search__l1-tag{display:inline-flex!important;padding:6px 16px!important;justify-content:center!important;align-items:center!important;gap:10px!important;background:transparent!important;border:none!important;border-radius:0!important;cursor:pointer!important;transition:all 0.2s ease!important;outline:none!important}
+.rs-search__l1-text{color:#333!important;text-align:center!important;font-feature-settings:"case" on!important;font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important;font-size:18px!important;font-style:normal!important;font-weight:500!important;line-height:160%!important;letter-spacing:1.8px!important}
+.rs-search__l1-tag:hover,.rs-search__l1-tag:focus,.rs-search__l1-tag.is-active{border-radius:20.5px!important;background:#E83743!important}
+.rs-search__l1-tag:hover .rs-search__l1-text,.rs-search__l1-tag:focus .rs-search__l1-text,.rs-search__l1-tag.is-active .rs-search__l1-text{color:#FFF!important}
+.rs-search__l1-tag:focus-visible{outline:2px solid #E83743!important;outline-offset:2px!important}
+.rs-search__level2{display:flex!important;flex-wrap:wrap!important;gap:10px!important;min-height:40px!important;align-items:center!important}
+.rs-search__level2.rs-search__l2--loading{opacity:0.6!important;pointer-events:none!important;position:relative!important}
+.rs-search__level2.rs-search__l2--loading::after{content:"載入中..."!important;display:block!important;width:100%!important;text-align:center!important;color:#666!important;font-size:14px!important;font-family:"Noto Sans TC",sans-serif!important}
+.rs-search__l2-tag{display:flex!important;padding:4px 16px!important;justify-content:center!important;align-items:center!important;gap:10px!important;border-radius:18.5px!important;border:1px solid #D9D9D9!important;text-decoration:none!important;background:transparent!important;transition:all 0.2s ease!important;min-height:40px!important}
+.rs-search__l2-text{color:#88888C!important;text-align:center!important;font-feature-settings:"case" on!important;font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important;font-size:18px!important;font-style:normal!important;font-weight:500!important;line-height:160%!important;letter-spacing:1.8px!important}
+.rs-search__l2-tag:hover,.rs-search__l2-tag:focus,.rs-search__l2-tag.is-active{background:#E83743!important;border-color:#E83743!important;text-decoration:none!important}
+.rs-search__l2-tag:hover .rs-search__l2-text,.rs-search__l2-tag:focus .rs-search__l2-text,.rs-search__l2-tag.is-active .rs-search__l2-text{color:#FFF!important}
+.rs-search__l2-tag:focus-visible{outline:2px solid #E83743!important;outline-offset:2px!important}
+.rs-search__empty,.rs-search__error{font-size:14px!important;margin-top:8px!important;padding:10px 15px!important;border-radius:4px!important;font-family:"Noto Sans TC",sans-serif!important;width:100%!important;text-align:center!important}
+.rs-search__empty{color:#666!important;background:#f5f5f5!important;border:1px solid #ddd!important}
+.rs-search__error{color:#d32f2f!important;background:#ffebee!important;border:1px solid #ef5350!important}
+@media (max-width:768px){.rs-search__l1-text,.rs-search__l2-text{font-size:16px!important;letter-spacing:1.6px!important}.rs-search__l1-tag{padding:5px 14px!important}.rs-search__l2-tag{padding:3px 14px!important}}
+@media (max-width:480px){.rs-search__level1,.rs-search__level2{gap:8px!important}.rs-search__l1-text,.rs-search__l2-text{font-size:15px!important;letter-spacing:1.5px!important}.rs-search__l1-tag{padding:4px 12px!important}.rs-search__l2-tag{padding:3px 12px!important;min-height:36px!important}.rs-search__empty,.rs-search__error{font-size:13px!important;padding:8px 12px!important}}
+@media (prefers-contrast:high){.rs-search__l1-tag,.rs-search__l2-tag{border:2px solid currentColor!important}}
+@media (prefers-reduced-motion:reduce){.rs-search__l1-tag,.rs-search__l2-tag{transition:none!important}}
+@media print{.rs-search{display:none!important}}
+@media (pointer:coarse){.rs-search__l1-tag,.rs-search__l2-tag{min-height:44px!important;min-width:44px!important}}
+[dir="rtl"] .rs-search__level1,[dir="rtl"] .rs-search__level2{direction:rtl!important}
+@media (prefers-color-scheme:dark){.rs-search__l1-text{color:#e0e0e0!important}.rs-search__l2-tag{border-color:#555!important}.rs-search__l2-text{color:#aaa!important}.rs-search__empty{color:#aaa!important;background:#2a2a2a!important;border-color:#444!important}.rs-search__error{color:#ef5350!important;background:#3a1f1f!important;border-color:#d32f2f!important}}
 </style>';
     }
 
