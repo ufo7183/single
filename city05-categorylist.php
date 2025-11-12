@@ -474,17 +474,30 @@ add_action('wp_enqueue_scripts', function () {
 (function() {
     console.log('[CITY05] Script loaded and executing');
 
+    let retryCount = 0;
+    const maxRetries = 10;
+    const retryDelay = 100; // ms
+
     function initCategoryScroll() {
-        console.log('[CITY05] initCategoryScroll called');
+        console.log('[CITY05] initCategoryScroll called (attempt ' + (retryCount + 1) + ')');
         console.log('[CITY05] readyState:', document.readyState);
 
         const containers = document.querySelectorAll('.city05-category-list-container');
         console.log('[CITY05] Found containers:', containers.length);
 
         if (containers.length === 0) {
-            console.warn('[CITY05] No .city05-category-list-container found on page');
-            return;
+            retryCount++;
+            if (retryCount < maxRetries) {
+                console.log('[CITY05] No containers found, retrying in ' + retryDelay + 'ms... (attempt ' + retryCount + '/' + maxRetries + ')');
+                setTimeout(initCategoryScroll, retryDelay);
+                return;
+            } else {
+                console.warn('[CITY05] Max retries reached. No .city05-category-list-container found on page after ' + maxRetries + ' attempts');
+                return;
+            }
         }
+
+        console.log('[CITY05] Container(s) found! Initializing drag scroll...');
 
         containers.forEach((container, index) => {
             console.log('[CITY05] Processing container', index + 1);
@@ -543,7 +556,7 @@ add_action('wp_enqueue_scripts', function () {
             console.log('[CITY05] Events bound and cursor set for container', index + 1);
         });
 
-        console.log('[CITY05] All containers initialized');
+        console.log('[CITY05] All containers initialized successfully!');
     }
 
     if (document.readyState === 'loading') {

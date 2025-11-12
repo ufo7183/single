@@ -503,17 +503,30 @@ add_action('wp_enqueue_scripts', function () {
 (function() {
     console.log('[RSCAT] Script loaded and executing');
 
+    let retryCount = 0;
+    const maxRetries = 10;
+    const retryDelay = 100; // ms
+
     function initRscatCategoryScroll() {
-        console.log('[RSCAT] initRscatCategoryScroll called');
+        console.log('[RSCAT] initRscatCategoryScroll called (attempt ' + (retryCount + 1) + ')');
         console.log('[RSCAT] readyState:', document.readyState);
 
         const containers = document.querySelectorAll('.rscat-category-list-container');
         console.log('[RSCAT] Found containers:', containers.length);
 
         if (containers.length === 0) {
-            console.warn('[RSCAT] No .rscat-category-list-container found on page');
-            return;
+            retryCount++;
+            if (retryCount < maxRetries) {
+                console.log('[RSCAT] No containers found, retrying in ' + retryDelay + 'ms... (attempt ' + retryCount + '/' + maxRetries + ')');
+                setTimeout(initRscatCategoryScroll, retryDelay);
+                return;
+            } else {
+                console.warn('[RSCAT] Max retries reached. No .rscat-category-list-container found on page after ' + maxRetries + ' attempts');
+                return;
+            }
         }
+
+        console.log('[RSCAT] Container(s) found! Initializing drag scroll...');
 
         containers.forEach((container, index) => {
             console.log('[RSCAT] Processing container', index + 1);
@@ -572,7 +585,7 @@ add_action('wp_enqueue_scripts', function () {
             console.log('[RSCAT] Events bound and cursor set for container', index + 1);
         });
 
-        console.log('[RSCAT] All containers initialized');
+        console.log('[RSCAT] All containers initialized successfully!');
     }
 
     if (document.readyState === 'loading') {
