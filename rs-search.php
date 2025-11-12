@@ -10,7 +10,7 @@
  * [rs-search root="123" orderby="name" order="ASC" show_count="true"]
  *
  * @package RS_Search
- * @version 1.0.1
+ * @version 1.0.2
  */
 
 // 防止直接訪問
@@ -31,7 +31,7 @@ class RS_Search_Shortcode {
     /**
      * 版本號
      */
-    const VERSION = '1.0.1';
+    const VERSION = '1.0.2';
 
     /**
      * Taxonomy 名稱
@@ -42,6 +42,11 @@ class RS_Search_Shortcode {
      * Nonce Action
      */
     const NONCE_ACTION = 'rs-search';
+
+    /**
+     * 是否已輸出樣式
+     */
+    private static $styles_printed = false;
 
     /**
      * 獲取單例實例
@@ -58,7 +63,6 @@ class RS_Search_Shortcode {
      */
     private function __construct() {
         add_action( 'init', array( $this, 'register_shortcode' ) );
-        add_action( 'wp_enqueue_scripts', array( $this, 'register_assets' ) );
 
         // AJAX 處理器（登入與未登入）
         add_action( 'wp_ajax_rs_search_load_children', array( $this, 'ajax_load_children' ) );
@@ -72,29 +76,6 @@ class RS_Search_Shortcode {
         if ( ! shortcode_exists( 'rs-search' ) ) {
             add_shortcode( 'rs-search', array( $this, 'shortcode_handler' ) );
         }
-    }
-
-    /**
-     * 註冊資源（CSS 與 JS）
-     */
-    public function register_assets() {
-        // 註冊 CSS
-        wp_register_style(
-            'rs-search-style',
-            plugins_url( 'assets/rs-search.css', __FILE__ ),
-            array(),
-            self::VERSION,
-            'all'
-        );
-
-        // 註冊 JS
-        wp_register_script(
-            'rs-search-script',
-            plugins_url( 'assets/rs-search.js', __FILE__ ),
-            array(),
-            self::VERSION,
-            true
-        );
     }
 
     /**
@@ -126,18 +107,6 @@ class RS_Search_Shortcode {
             }
             return '';
         }
-
-        // 載入資源
-        wp_enqueue_style( 'rs-search-style' );
-        wp_enqueue_script( 'rs-search-script' );
-
-        // 將配置注入 JavaScript
-        wp_localize_script( 'rs-search-script', 'RS_SEARCH', array(
-            'ajax_url' => admin_url( 'admin-ajax.php' ),
-            'nonce'    => wp_create_nonce( self::NONCE_ACTION ),
-            'taxonomy' => self::TAXONOMY,
-            'show_count' => (bool) $args['show_count'],
-        ) );
 
         // 處理 include/exclude 參數
         $include = $this->parse_comma_separated( $args['include'] );
@@ -176,9 +145,19 @@ class RS_Search_Shortcode {
             $container_classes[] = sanitize_html_class( $args['class'] );
         }
 
+        // 生成唯一 ID
+        $unique_id = 'rs-search-' . uniqid();
+
         ob_start();
+
+        // 輸出樣式（只輸出一次）
+        if ( ! self::$styles_printed ) {
+            echo $this->get_inline_styles();
+            self::$styles_printed = true;
+        }
+
         ?>
-        <div class="<?php echo esc_attr( implode( ' ', $container_classes ) ); ?>" data-rs-taxonomy="<?php echo esc_attr( self::TAXONOMY ); ?>">
+        <div class="<?php echo esc_attr( implode( ' ', $container_classes ) ); ?>" id="<?php echo esc_attr( $unique_id ); ?>" data-rs-taxonomy="<?php echo esc_attr( self::TAXONOMY ); ?>">
             <div class="rs-search__level1" role="tablist" aria-label="第一層分類">
                 <?php if ( empty( $level1_terms ) ) : ?>
                     <p class="rs-search__empty">無可用分類</p>
@@ -207,9 +186,143 @@ class RS_Search_Shortcode {
                 <!-- 第二層分類將由 AJAX 載入 -->
             </div>
         </div>
+
         <?php
+        // 輸出 JavaScript
+        echo $this->get_inline_script( $unique_id, $args );
 
         return ob_get_clean();
+    }
+
+    /**
+     * 取得內嵌樣式
+     */
+    private function get_inline_styles() {
+        return '<style type="text/css">
+/* RS Search - 階層式自定義分類快篩 */
+.rs-search{width:100%;max-width:100%;font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;box-sizing:border-box}
+.rs-search *,.rs-search *::before,.rs-search *::after{box-sizing:inherit}
+.rs-search__level1{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;align-items:center}
+.rs-search__l1-tag{display:inline-flex;padding:6px 16px;justify-content:center;align-items:center;gap:10px;background:transparent;border:none;border-radius:0;cursor:pointer;transition:all 0.2s ease;outline:none}
+.rs-search__l1-text{color:#333;text-align:center;font-feature-settings:"case" on;font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:18px;font-style:normal;font-weight:500;line-height:160%;letter-spacing:1.8px}
+.rs-search__l1-tag:hover,.rs-search__l1-tag:focus,.rs-search__l1-tag.is-active{border-radius:20.5px;background:#E83743}
+.rs-search__l1-tag:hover .rs-search__l1-text,.rs-search__l1-tag:focus .rs-search__l1-text,.rs-search__l1-tag.is-active .rs-search__l1-text{color:#FFF}
+.rs-search__l1-tag:focus-visible{outline:2px solid #E83743;outline-offset:2px}
+.rs-search__level2{display:flex;flex-wrap:wrap;gap:10px;min-height:40px;align-items:center}
+.rs-search__level2.rs-search__l2--loading{opacity:0.6;pointer-events:none;position:relative}
+.rs-search__level2.rs-search__l2--loading::after{content:"載入中...";display:block;width:100%;text-align:center;color:#666;font-size:14px;font-family:"Noto Sans TC",sans-serif}
+.rs-search__l2-tag{display:flex;padding:4px 16px;justify-content:center;align-items:center;gap:10px;border-radius:18.5px;border:1px solid #D9D9D9;text-decoration:none;background:transparent;transition:all 0.2s ease;min-height:40px}
+.rs-search__l2-text{color:#88888C;text-align:center;font-feature-settings:"case" on;font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:18px;font-style:normal;font-weight:500;line-height:160%;letter-spacing:1.8px}
+.rs-search__l2-tag:hover,.rs-search__l2-tag:focus,.rs-search__l2-tag.is-active{background:#E83743;border-color:#E83743;text-decoration:none}
+.rs-search__l2-tag:hover .rs-search__l2-text,.rs-search__l2-tag:focus .rs-search__l2-text,.rs-search__l2-tag.is-active .rs-search__l2-text{color:#FFF}
+.rs-search__l2-tag:focus-visible{outline:2px solid #E83743;outline-offset:2px}
+.rs-search__empty,.rs-search__error{font-size:14px;margin-top:8px;padding:10px 15px;border-radius:4px;font-family:"Noto Sans TC",sans-serif;width:100%;text-align:center}
+.rs-search__empty{color:#666;background:#f5f5f5;border:1px solid #ddd}
+.rs-search__error{color:#d32f2f;background:#ffebee;border:1px solid #ef5350}
+@media (max-width:768px){.rs-search__l1-text,.rs-search__l2-text{font-size:16px;letter-spacing:1.6px}.rs-search__l1-tag{padding:5px 14px}.rs-search__l2-tag{padding:3px 14px}}
+@media (max-width:480px){.rs-search__level1,.rs-search__level2{gap:8px}.rs-search__l1-text,.rs-search__l2-text{font-size:15px;letter-spacing:1.5px}.rs-search__l1-tag{padding:4px 12px}.rs-search__l2-tag{padding:3px 12px;min-height:36px}.rs-search__empty,.rs-search__error{font-size:13px;padding:8px 12px}}
+@media (prefers-contrast:high){.rs-search__l1-tag,.rs-search__l2-tag{border:2px solid currentColor}}
+@media (prefers-reduced-motion:reduce){.rs-search__l1-tag,.rs-search__l2-tag{transition:none}}
+@media print{.rs-search{display:none}}
+@media (pointer:coarse){.rs-search__l1-tag,.rs-search__l2-tag{min-height:44px;min-width:44px}}
+[dir="rtl"] .rs-search__level1,[dir="rtl"] .rs-search__level2{direction:rtl}
+@media (prefers-color-scheme:dark){.rs-search__l1-text{color:#e0e0e0}.rs-search__l2-tag{border-color:#555}.rs-search__l2-text{color:#aaa}.rs-search__empty{color:#aaa;background:#2a2a2a;border-color:#444}.rs-search__error{color:#ef5350;background:#3a1f1f;border-color:#d32f2f}}
+</style>';
+    }
+
+    /**
+     * 取得內嵌腳本
+     */
+    private function get_inline_script( $container_id, $args ) {
+        $ajax_url = admin_url( 'admin-ajax.php' );
+        $nonce = wp_create_nonce( self::NONCE_ACTION );
+        $taxonomy = self::TAXONOMY;
+        $show_count = (bool) $args['show_count'] ? 'true' : 'false';
+
+        return '<script type="text/javascript">
+(function(){
+"use strict";
+var container=document.getElementById("' . esc_js( $container_id ) . '");
+if(!container)return;
+var config={ajax_url:"' . esc_js( $ajax_url ) . '",nonce:"' . esc_js( $nonce ) . '",taxonomy:"' . esc_js( $taxonomy ) . '",show_count:' . $show_count . '};
+var level1Container=container.querySelector(".rs-search__level1");
+var level2Container=container.querySelector(".rs-search__level2");
+var isLoading=false;
+function setActiveButton(button){
+var allButtons=level1Container.querySelectorAll(".rs-search__l1-tag");
+allButtons.forEach(function(btn){btn.classList.remove("is-active");btn.setAttribute("aria-selected","false")});
+button.classList.add("is-active");
+button.setAttribute("aria-selected","true")
+}
+function setLoadingState(loading){
+isLoading=loading;
+level2Container.setAttribute("aria-busy",loading?"true":"false");
+if(loading){level2Container.classList.add("rs-search__l2--loading")}else{level2Container.classList.remove("rs-search__l2--loading")}
+}
+function showMessage(message,type){
+var className="rs-search__"+type;
+var div=document.createElement("div");
+div.textContent=message;
+level2Container.innerHTML="<div class=\""+className+"\">"+div.innerHTML+"</div>"
+}
+function renderLevel2(children){
+var fragment=document.createDocumentFragment();
+children.forEach(function(term){
+var link=document.createElement("a");
+link.className="rs-search__l2-tag";
+link.href=term.url;
+link.setAttribute("role","listitem");
+var span=document.createElement("span");
+span.className="rs-search__l2-text";
+var text=term.name;
+if(config.show_count&&term.count>0){text+=" ("+term.count+")"}
+span.textContent=text;
+link.appendChild(span);
+fragment.appendChild(link)
+});
+level2Container.innerHTML="";
+level2Container.appendChild(fragment)
+}
+function loadLevel2(parentId){
+setLoadingState(true);
+var formData=new URLSearchParams();
+formData.append("action","rs_search_load_children");
+formData.append("nonce",config.nonce);
+formData.append("parent",parentId);
+formData.append("taxonomy",config.taxonomy);
+fetch(config.ajax_url,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:formData})
+.then(function(response){if(!response.ok){throw new Error("HTTP error! status: "+response.status)}return response.json()})
+.then(function(data){
+if(!data.ok){showMessage(data.message||"載入失敗","error");return}
+if(!data.children||data.children.length===0){showMessage("尚無第二層分類","empty");return}
+renderLevel2(data.children)
+})
+.catch(function(error){console.error("RS Search AJAX Error:",error);showMessage("載入失敗，請重試","error")})
+.finally(function(){setLoadingState(false)})
+}
+function handleLevel1Click(button){
+if(isLoading)return;
+var termId=button.getAttribute("data-term-id");
+if(!termId)return;
+setActiveButton(button);
+loadLevel2(termId)
+}
+level1Container.addEventListener("click",function(e){
+var button=e.target.closest(".rs-search__l1-tag");
+if(!button)return;
+e.preventDefault();
+handleLevel1Click(button)
+});
+var buttons=level1Container.querySelectorAll(".rs-search__l1-tag");
+buttons.forEach(function(button,index){
+button.addEventListener("keydown",function(e){
+if(e.key==="Enter"||e.key===" "){e.preventDefault();handleLevel1Click(button)}
+else if(e.key==="ArrowLeft"){e.preventDefault();var prevButton=buttons[index-1]||buttons[buttons.length-1];prevButton.focus()}
+else if(e.key==="ArrowRight"){e.preventDefault();var nextButton=buttons[index+1]||buttons[0];nextButton.focus()}
+})
+})
+})();
+</script>';
     }
 
     /**

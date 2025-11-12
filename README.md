@@ -229,33 +229,41 @@ rs-search/
 
 ## 📁 檔案結構
 
+### v1.0.2+ 內嵌版本（推薦）
+
 ```
 rs-search/
 │
-├── rs-search.php                 # 主程式檔案
+├── rs-search.php                 # ⭐ 唯一必要檔案（內含 CSS 與 JS）
 │   ├── RS_Search_Shortcode       # 主類別
 │   │   ├── register_shortcode()  # 註冊 shortcode
 │   │   ├── shortcode_handler()   # 渲染 HTML
 │   │   ├── ajax_load_children()  # AJAX 處理器
-│   │   └── register_assets()     # 資源註冊
+│   │   ├── get_inline_styles()   # 內嵌 CSS
+│   │   └── get_inline_script()   # 內嵌 JavaScript
 │   └── 初始化單例
-│
-├── assets/rs-search.css          # 樣式表
-│   ├── BEM 命名規範
-│   ├── 響應式斷點
-│   ├── 無障礙樣式
-│   └── 深色模式支援
-│
-├── assets/rs-search.js           # 前端互動腳本
-│   ├── RSSearchComponent         # 元件類別
-│   │   ├── handleLevel1Click()   # 第一層點擊
-│   │   ├── loadLevel2()          # AJAX 請求
-│   │   ├── renderLevel2()        # 渲染第二層
-│   │   └── setupKeyboardNav()    # 鍵盤導航
-│   └── 初始化函式
 │
 └── README.md                     # 說明文件（本檔案）
 ```
+
+**✨ 優勢**：
+- 只需要一個 `rs-search.php` 檔案
+- 完美支援 Code Snippets 外掛
+- 無需處理檔案路徑問題
+- 即插即用，複製程式碼即可使用
+
+### v1.0.1 舊版本結構（已棄用）
+
+```
+rs-search/
+│
+├── rs-search.php                 # 主程式檔案
+├── assets/rs-search.css          # 外部樣式表（已棄用）
+├── assets/rs-search.js           # 外部腳本（已棄用）
+└── README.md                     # 說明文件
+```
+
+**⚠️ 注意**：v1.0.0 和 v1.0.1 版本需要 assets 資料夾，在 Code Snippets 中會有路徑問題，建議升級至 v1.0.2+。
 
 ---
 
@@ -265,7 +273,8 @@ rs-search/
 
 - **設計模式**: Singleton（單例）
 - **命名空間**: 無（避免相容性問題）
-- **Hook**: `init`, `wp_enqueue_scripts`, `wp_ajax_*`
+- **Hook**: `init`, `wp_ajax_*`（v1.0.2+ 移除了 `wp_enqueue_scripts`）
+- **資源載入**: 內嵌 CSS 與 JavaScript（無需外部檔案）
 - **安全性**: Nonce 驗證、資料清理、輸出轉義
 
 ### JavaScript 架構
@@ -554,6 +563,29 @@ var_dump(wp_verify_nonce($_POST['nonce'], 'rs-search'));
 
 ## 📝 版本歷史
 
+### v1.0.2 (2025-01-12)
+
+**重大更新 - 修正 CSS 與 JS 載入問題**
+
+🐛 **問題修正**
+- 修正透過 Code Snippets 使用時 CSS 完全無效的問題
+- 修正 JavaScript 無法載入導致 AJAX 功能失效的問題
+- 修正樣式錯誤導致第一層分類顯示不正確的問題
+
+🔧 **技術變更**
+- **改用內嵌方式**：將 CSS 和 JavaScript 直接嵌入 PHP 檔案中
+- 移除對外部 assets 資料夾的依賴
+- 優化程式碼，使用壓縮版 CSS 和 JS
+- 加入唯一 ID 機制，支援同一頁面多個 shortcode 實例
+- 加入 `$styles_printed` 靜態變數，避免重複輸出 CSS
+
+💡 **使用優勢**
+- **單檔案部署**：只需要 `rs-search.php` 一個檔案即可運作
+- **完美支援 Code Snippets**：無需處理檔案路徑問題
+- **即插即用**：複製程式碼即可使用，無需額外設定
+
+---
+
 ### v1.0.1 (2025-01-12)
 
 **功能更新**
@@ -647,4 +679,4 @@ SOFTWARE.
 
 **製作**: RS Search Team
 **最後更新**: 2025-01-12
-**版本**: 1.0.1
+**版本**: 1.0.2
