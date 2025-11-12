@@ -36,6 +36,7 @@ if (!function_exists('rscat_categorylist_settings_page')) {
         if (isset($_POST['rscat_save_settings']) && check_admin_referer('rscat_categorylist_settings')) {
             $settings = array(
                 'post_type_mappings' => array(),
+                'all_button_url' => isset($_POST['all_button_url']) ? esc_url_raw($_POST['all_button_url']) : '',
                 'css_styles' => array(
                     'button_normal' => sanitize_textarea_field($_POST['css_button_normal']),
                     'text_normal' => sanitize_textarea_field($_POST['css_text_normal']),
@@ -63,6 +64,7 @@ if (!function_exists('rscat_categorylist_settings_page')) {
         $settings = get_option('rscat_categorylist_settings', array());
         $mappings = isset($settings['post_type_mappings']) ? $settings['post_type_mappings'] : array();
         $css = isset($settings['css_styles']) ? $settings['css_styles'] : array();
+        $all_button_url = isset($settings['all_button_url']) ? $settings['all_button_url'] : '';
 
         // 預設 CSS 值
         $default_css = rscat_categorylist_get_default_css();
@@ -98,6 +100,19 @@ if (!function_exists('rscat_categorylist_settings_page')) {
                             </td>
                         </tr>
                     <?php endfor; ?>
+                </table>
+
+                <hr>
+
+                <h2>全部按鈕設定</h2>
+                <table class="form-table">
+                    <tr>
+                        <th scope="row"><label for="all_button_url">全部按鈕網址（選填）</label></th>
+                        <td>
+                            <input type="url" name="all_button_url" id="all_button_url" value="<?php echo esc_attr($all_button_url); ?>" class="regular-text" placeholder="例如: https://example.com/all-posts/">
+                            <p class="description">不填寫則自動偵測（文章列表頁或首頁）。填寫後，「全部」按鈕會固定指向此網址。</p>
+                        </td>
+                    </tr>
                 </table>
 
                 <hr>
@@ -194,6 +209,7 @@ if (!function_exists('rscat_categorylist_shortcode_handler')) {
         $settings = get_option('rscat_categorylist_settings', array());
         $mappings = isset($settings['post_type_mappings']) ? $settings['post_type_mappings'] : array();
         $css_styles = isset($settings['css_styles']) ? $settings['css_styles'] : array();
+        $custom_all_button_url = isset($settings['all_button_url']) && !empty($settings['all_button_url']) ? $settings['all_button_url'] : '';
 
         // 決定使用哪一組設定
         $mapping_index = intval($atts['mapping']) - 1;
@@ -399,7 +415,15 @@ if (!function_exists('rscat_categorylist_shortcode_handler')) {
         $all_button_url = '';
         $all_button_is_active = false;
 
-        if ($parent_id > 0) {
+        // 優先使用後台設定的網址
+        if (!empty($custom_all_button_url)) {
+            $all_button_url = $custom_all_button_url;
+            // 判斷是否為當前頁面（簡單比對）
+            $current_url = (is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+            if (rtrim($current_url, '/') === rtrim($all_button_url, '/')) {
+                $all_button_is_active = true;
+            }
+        } elseif ($parent_id > 0) {
             $all_button_url = get_term_link($parent_id, $taxonomy);
             if ($is_current_tax_page && $current_term && $current_term->term_id === $parent_id) {
                 $all_button_is_active = true;
