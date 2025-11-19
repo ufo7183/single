@@ -412,15 +412,15 @@
   // 更新 overlay 效果（所有設備）
   function updateOverlay(swiperInstance) {
     const slides = swiperInstance.slides;
-    const activeIndex = swiperInstance.activeIndex;
 
     // 移除所有 adjacent class
     slides.forEach(slide => slide.classList.remove('rsmeg-is-adjacent'));
 
-    // 給所有可見的 slides 加 class，但排除 active（中間/主卡片）
-    slides.forEach((slide, idx) => {
-      // centeredSlides: true 時，activeIndex 就是中間卡片
-      if (slide.classList.contains('swiper-slide-visible') && idx !== activeIndex) {
+    // 給所有可見但非 active 的 slides 加 class
+    slides.forEach(slide => {
+      // 使用 Swiper 的 class 判斷：可見且不是 active
+      if (slide.classList.contains('swiper-slide-visible') &&
+          !slide.classList.contains('swiper-slide-active')) {
         slide.classList.add('rsmeg-is-adjacent');
       }
     });
